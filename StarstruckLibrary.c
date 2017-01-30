@@ -418,7 +418,7 @@ void runCompAuton(string side)
 
 	for(int i = 0; i < 750; i++)
 	{
-  	liftToPos(2100); //lift up to knock  -- NEEDS NEW VALUES
+  	liftToPos(1900); //lift up to knock  -- NEEDS NEW VALUES
   	wait1Msec(1);
   }
   setLiftPower(0); //relax lift motors
@@ -447,7 +447,7 @@ void runCompAuton(string side)
  		turnCounterClockwise(100); //turn left
   wait1Msec(500);
 
-  liftToPos(3800);
+  liftToPos(3200);
   driveForDistance(900, 127, -20); //parallel to fence
 
   if(side == "left")
@@ -487,7 +487,7 @@ void runCompAuton(string side)
   //lowers lift
   for(int i = 0; i < 750; i++)
   {
-  	liftToPos(3850);
+  	liftToPos(3200);
   	wait1Msec(1);
   }
 
@@ -507,7 +507,7 @@ task usercontrol()
 
   while(true)
 	{
-		int setPoint = 3000; //NEEDS NEW VALUE
+		int setPoint = 3000;
 
 		//Buttons and Joysticks
 		int  rightJoy = vexRT[Ch2];
