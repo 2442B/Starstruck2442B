@@ -249,13 +249,16 @@ void runProgSkills(string side)
 
 	//phase I : preloads
 	//claw starts on sides
-	driveBackForDistance(-500, -127, 6);
+	driveBackForDistance(-300, -127, 6);
 	//program edit - NEEDS TESTING
-	driveForDistance(100, 127, -6); //drives back
+	//driveForDistance(100, 127, -6); //drives back
 	wait1Msec(500);
 	setPincerPower(-127); //hopefully grabs star + fallen preload
-	wait1Msec(2000);  //waits
-	driveBackForDistance(-800, -127, 6); //drives back to fence
+	wait1Msec(1000);
+	setLiftPower(-100);
+	wait1Msec(1000);  //waits
+	setLiftPower(0);
+	driveBackForDistance(-900, -127, 6); //drives back to fence
 	launch(); //launch() leaves claw open
 
 
@@ -290,7 +293,7 @@ void runProgSkills(string side)
 	wait1Msec(1500); //place to possible change wait time
 	setPincerPower(0); //relax pincer motors b/c we are pushing
 
-	driveForDistance(1500, 127, -6); //drives to other end of field
+	driveForDistance(1750, 127, -6); //drives to other end of field
 	setPincerPower(-127); //grabs cube again
 	wait1Msec(750); //longer wait time - turning with a cube
 
