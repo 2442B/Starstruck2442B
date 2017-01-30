@@ -219,7 +219,7 @@ void pincerToPos(int angle)
 void launch()
 {
 	int currAngle = SensorValue[liftPoten];
-	while(currAngle > 1400) //Lift to drop pos - FIX NUMBER
+	while(currAngle > 800) //Lift to drop pos - FIX NUMBER
 	{
 		setLiftPower(127);
 		currAngle = SensorValue[liftPoten];
@@ -234,7 +234,7 @@ void launch()
 		wait1Msec(1);
 	}
 	setPincerPower(0);
-	while(currAngle < 3875) //Lift down - FIX NUMBER
+	while(currAngle < 3200) //Lift down - FIX NUMBER
 	{
 		setLiftPower(-127);
 		currAngle = SensorValue[liftPoten];
