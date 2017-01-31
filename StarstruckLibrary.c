@@ -13,6 +13,7 @@
 #pragma config(Motor,  port8,           liftLeftExtremes, tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port9,           liftLeftMid,   tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port10,          leftPincer,    tmotorVex393_HBridge, openLoop, reversed)
+#pragma config(UART_Usage, UART2, uartVEXLCD, baudRate19200, IOPins, None, None)
 
 #pragma systemFile
 
@@ -53,74 +54,74 @@ void driveForTime(int time, int power)
 	wait1Msec(time);
 
 	setLeftDrivePower(0);
-  setRightDrivePower(0);
+	setRightDrivePower(0);
 }
 void driveForDistance(int numClicks, int power, int stopPower = -6)
 {
-		SensorValue(leftEncoder) = 0;
-		SensorValue(rightEncoder) = 0;
-		int leftEn = 0;
-		int rightEn = 0;
+	SensorValue(leftEncoder) = 0;
+	SensorValue(rightEncoder) = 0;
+	int leftEn = 0;
+	int rightEn = 0;
 
-		while(leftEn < numClicks || rightEn < numClicks)
+	while(leftEn < numClicks || rightEn < numClicks)
+	{
+		leftEn = abs(SensorValue(leftEncoder));
+		rightEn = abs(SensorValue(rightEncoder));
+		setLeftDrivePower(power);
+		setRightDrivePower(power);
+		if(leftEn >= rightEn + 50) //left side 50 or more clicks ahead
 		{
-			leftEn = abs(SensorValue(leftEncoder));
-			rightEn = abs(SensorValue(rightEncoder));
-			setLeftDrivePower(power);
-			setRightDrivePower(power);
-			if(leftEn >= rightEn + 50) //left side 50 or more clicks ahead
-			{
-				if(power - 45 <= 0)
-					setLeftDrivePower(0);
-				else
-					setLeftDrivePower(power - 45); //may need to be changed
-
-			}
-			else if(rightEn >= leftEn + 50)
-			{
-				if(power - 45 <= 0)
-					setRightDrivePower(0);
-				else
-					setRightDrivePower(power - 45); //may need to be changed
-			}
-
-			if(rightEn >= numClicks)
-				setRightDrivePower(0);
-			else if(leftEn >= numClicks)
+			if(power - 45 <= 0)
 				setLeftDrivePower(0);
-		}
-  driveForTime(100,stopPower); //prevents glide
+			else
+				setLeftDrivePower(power - 45); //may need to be changed
 
-  setLeftDrivePower(0);
-  setRightDrivePower(0);
+		}
+		else if(rightEn >= leftEn + 50)
+		{
+			if(power - 45 <= 0)
+				setRightDrivePower(0);
+			else
+				setRightDrivePower(power - 45); //may need to be changed
+		}
+
+		if(rightEn >= numClicks)
+			setRightDrivePower(0);
+		else if(leftEn >= numClicks)
+			setLeftDrivePower(0);
+	}
+	driveForTime(100,stopPower); //prevents glide
+
+	setLeftDrivePower(0);
+	setRightDrivePower(0);
 }
 void driveBackForDistance(int numClicks, int power, int stopPower)
 {
-		SensorValue(leftEncoder) = 0;
-		SensorValue(rightEncoder) = 0;
-		int leftEn = 0;
-		int rightEn = 0;
+	SensorValue(leftEncoder) = 0;
+	SensorValue(rightEncoder) = 0;
+	int leftEn = 0;
+	int rightEn = 0;
 
-		while(leftEn > numClicks || rightEn > numClicks)
-		{
-			leftEn = SensorValue(leftEncoder); //going to negative
-			rightEn = -SensorValue(rightEncoder); //going to negative
-			setLeftDrivePower(power);
-			setRightDrivePower(power);
-			if(leftEn <= rightEn - 10)
-				setLeftDrivePower(0); //left side 50 or more clicks ahead, may need to be changed
-			else if(rightEn <= leftEn - 10)
-				setRightDrivePower(0); //may need to be changed
+	while(leftEn > numClicks || rightEn > numClicks)
+	{
+		leftEn = SensorValue(leftEncoder); //going to negative
+		rightEn = -SensorValue(rightEncoder); //going to negative
+		setLeftDrivePower(power);
+		setRightDrivePower(power);
+		if(leftEn <= rightEn - 10)
+			setLeftDrivePower(0); //left side 50 or more clicks ahead, may need to be changed
+		else if(rightEn <= leftEn - 10)
+			setRightDrivePower(0); //may need to be changed
 
-			if(rightEn <= numClicks)
-				setRightDrivePower(0);
-			else if(leftEn <= numClicks)
-				setLeftDrivePower(0);
-		}
-  driveForTime(100,stopPower); //prevents glide
+		if(rightEn <= numClicks)
+			setRightDrivePower(0);
+		else if(leftEn <= numClicks)
+			setLeftDrivePower(0);
+	}
+	driveForTime(100,stopPower); //prevents glide
 
-  setLeftDrivePower(0);
-  setRightDrivePower(0);
+	setLeftDrivePower(0);
+	setRightDrivePower(0);
 }
 
 void turnClockwise(int angle)
@@ -179,15 +180,15 @@ void turnCounterClockwise(int angle)
 
 
 /*
-  ______   __                               ______                   __                 ______     __                           __                    __    __
- /      \ |  \                             /      \                 |  \               /      \   |  \                         |  \                  |  \  |  \
+______   __                               ______                   __                 ______     __                           __                    __    __
+/      \ |  \                             /      \                 |  \               /      \   |  \                         |  \                  |  \  |  \
 |  $$$$$$\| $$  ______   __   __   __     |  $$$$$$\  ______    ____| $$  ______      |  $$$$$$\ _| $$_     ______    ______  _| $$_     _______     | $$  | $$  ______    ______    ______
 | $$   \$$| $$ |      \ |  \ |  \ |  \    | $$   \$$ /      \  /      $$ /      \     | $$___\$$|   $$ \   |      \  /      \|   $$ \   /       \    | $$__| $$ /      \  /      \  /      \
 | $$      | $$  \$$$$$$\| $$ | $$ | $$    | $$      |  $$$$$$\|  $$$$$$$|  $$$$$$\     \$$    \  \$$$$$$    \$$$$$$\|  $$$$$$\\$$$$$$  |  $$$$$$$    | $$    $$|  $$$$$$\|  $$$$$$\|  $$$$$$\
 | $$   __ | $$ /      $$| $$ | $$ | $$    | $$   __ | $$  | $$| $$  | $$| $$    $$     _\$$$$$$\  | $$ __  /      $$| $$   \$$ | $$ __  \$$    \     | $$$$$$$$| $$    $$| $$   \$$| $$    $$
 | $$__/  \| $$|  $$$$$$$| $$_/ $$_/ $$    | $$__/  \| $$__/ $$| $$__| $$| $$$$$$$$    |  \__| $$  | $$|  \|  $$$$$$$| $$       | $$|  \ _\$$$$$$\    | $$  | $$| $$$$$$$$| $$      | $$$$$$$$
- \$$    $$| $$ \$$    $$ \$$   $$   $$     \$$    $$ \$$    $$ \$$    $$ \$$     \     \$$    $$   \$$  $$ \$$    $$| $$        \$$  $$|       $$    | $$  | $$ \$$     \| $$       \$$     \
-  \$$$$$$  \$$  \$$$$$$$  \$$$$$\$$$$       \$$$$$$   \$$$$$$   \$$$$$$$  \$$$$$$$      \$$$$$$     \$$$$   \$$$$$$$ \$$         \$$$$  \$$$$$$$      \$$   \$$  \$$$$$$$ \$$        \$$$$$$$
+\$$    $$| $$ \$$    $$ \$$   $$   $$     \$$    $$ \$$    $$ \$$    $$ \$$     \     \$$    $$   \$$  $$ \$$    $$| $$        \$$  $$|       $$    | $$  | $$ \$$     \| $$       \$$     \
+\$$$$$$  \$$  \$$$$$$$  \$$$$$\$$$$       \$$$$$$   \$$$$$$   \$$$$$$$  \$$$$$$$      \$$$$$$     \$$$$   \$$$$$$$ \$$         \$$$$  \$$$$$$$      \$$   \$$  \$$$$$$$ \$$        \$$$$$$$
 
 */
 
@@ -321,11 +322,11 @@ void runProgSkills(string side)
 	//phase IV : spin and grab star
 
 	//sets pincers to be on sides of robot
-/*
+	/*
 	for(int i = 0; i < 1500; i++)
 	{
-		pincerToPos(3200);
-		wait1Msec(1);
+	pincerToPos(3200);
+	wait1Msec(1);
 	}*/
 
 	//move away from fence a little bit
@@ -374,36 +375,36 @@ void runProgSkills(string side)
 auton ideas:
 
 - two seperate autons
-	- one independent
-	- one (or more?) to work alongside 2442A, 2442C
-		- getting stars on the field [ideas below]
-			- 3 stars in the back?
-			- stars in the corners
-				*other teams don't do this*
-			- move toward stars on the fence holding claw up (possible application of tasks
-			-
+- one independent
+- one (or more?) to work alongside 2442A, 2442C
+- getting stars on the field [ideas below]
+- 3 stars in the back?
+- stars in the corners
+*other teams don't do this*
+- move toward stars on the fence holding claw up (possible application of tasks
+-
 
 */
 //sides - auton
-	//format: side; results
-	//for 2, 4 - see markers in code
-	//qualifying
-	//1: right; got cube, not stars
-	//2: [REDOWNLOAD] right* - comment out for 2442C; got stars [cube: N/A]
-	//3: right; got stars, not cube
-	//4: right; got stars, not cube
-	//Think* we have fixed it
-	//5: right; got cube, not stars
-	//6: [REDOWNLOAD] left* - comment out for 2442A; got stars [cube: N/A]
-	//Skills break
-	//7: [REDOWNLOAD] left* - comment out for 1615A; missed stars [cube: N/A]
-	//8: [REDOWNLOAD] right;
-	//quarterfinals
-	//1: right; got stars
-	//semifinals
-	//1: right; got stars - lost auton
-	//finals
-	//1: don't remember
+//format: side; results
+//for 2, 4 - see markers in code
+//qualifying
+//1: right; got cube, not stars
+//2: [REDOWNLOAD] right* - comment out for 2442C; got stars [cube: N/A]
+//3: right; got stars, not cube
+//4: right; got stars, not cube
+//Think* we have fixed it
+//5: right; got cube, not stars
+//6: [REDOWNLOAD] left* - comment out for 2442A; got stars [cube: N/A]
+//Skills break
+//7: [REDOWNLOAD] left* - comment out for 1615A; missed stars [cube: N/A]
+//8: [REDOWNLOAD] right;
+//quarterfinals
+//1: right; got stars
+//semifinals
+//1: right; got stars - lost auton
+//finals
+//1: don't remember
 
 
 void runCompAuton(string side)
@@ -421,14 +422,14 @@ void runCompAuton(string side)
 
 	for(int i = 0; i < 750; i++)
 	{
-  	liftToPos(1900); //lift up to knock  -- NEEDS NEW VALUES
-  	wait1Msec(1);
-  }
-  setLiftPower(0); //relax lift motors
-  wait1Msec(1000);
+		liftToPos(1900); //lift up to knock  -- NEEDS NEW VALUES
+		wait1Msec(1);
+	}
+	setLiftPower(0); //relax lift motors
+	wait1Msec(1000);
 
-  //puts pincers against sides
-  for(int i = 0; i < 1000; i++)
+	//puts pincers against sides
+	for(int i = 0; i < 1000; i++)
 	{
 		pincerToPos(3200);
 		wait1Msec(1);
@@ -437,78 +438,78 @@ void runCompAuton(string side)
 	//spin 180 to prepare for driver control only when commenting out the following code is commented, add this to "secondary auton"
 	/*
 	if(side == "right")
-		turnCounterClockwise(180);
+	turnCounterClockwise(180);
 	else if(side == "left")
-		turnClockwise(180);
-		*/
+	turnClockwise(180);
+	*/
 
 	//BEGIN COMMENT
 
-  if(side == "left")
-  	turnClockwise(100); //90 deg, but kinda guess and check - turn right
- 	else if(side == "right")
- 		turnCounterClockwise(100); //turn left
-  wait1Msec(500);
+	if(side == "left")
+		turnClockwise(100); //90 deg, but kinda guess and check - turn right
+	else if(side == "right")
+		turnCounterClockwise(100); //turn left
+	wait1Msec(500);
 
-  liftToPos(3200);
-  driveForDistance(900, 127, -20); //parallel to fence
+	liftToPos(3200);
+	driveForDistance(900, 127, -20); //parallel to fence
 
-  if(side == "left")
-  	turnClockwise(125); //turn to face cube
- 	else if(side == "right")
- 		turnCounterClockwise(125); //turn to face cube
+	if(side == "left")
+		turnClockwise(125); //turn to face cube
+	else if(side == "right")
+		turnCounterClockwise(125); //turn to face cube
 
-  wait1Msec(750);
-  setLiftPower(0);
-  driveForDistance(250, 127, -10); //forward to snag cube
+	wait1Msec(750);
+	setLiftPower(0);
+	driveForDistance(250, 127, -10); //forward to snag cube
 	setPincerPower(-127); //maybe works, hopefully holds pincer shut
 	wait1Msec(2000);
-  driveBackForDistance(-300, -127, 10); //back to fence
-  setLiftPower(127);
+	driveBackForDistance(-300, -127, 10); //back to fence
+	setLiftPower(127);
 
-  //CHANGED during competition
-  wait1Msec(1500);
-  setLiftPower(0);
+	//CHANGED during competition
+	wait1Msec(1500);
+	setLiftPower(0);
 
 	for(int i = 0; i < 1000; i++)
 	{
-  	pincerToPos(1030); //open pincer (should drop cube)
-  	wait1Msec(1);
-  }
-  wait1Msec(250);
-  for(int i = 0; i < 250; i++)
-  {
-  	pincerToPos(0);
-  	wait1Msec(1);
-  }
-  //starts to drive back
-  driveForDistance(100, 127, -6);
+		pincerToPos(1030); //open pincer (should drop cube)
+		wait1Msec(1);
+	}
+	wait1Msec(250);
+	for(int i = 0; i < 250; i++)
+	{
+		pincerToPos(0);
+		wait1Msec(1);
+	}
+	//starts to drive back
+	driveForDistance(100, 127, -6);
 
 
-  //END COMMENT
+	//END COMMENT
 
-  //lowers lift
-  for(int i = 0; i < 750; i++)
-  {
-  	liftToPos(3200);
-  	wait1Msec(1);
-  }
+	//lowers lift
+	for(int i = 0; i < 750; i++)
+	{
+		liftToPos(3200);
+		wait1Msec(1);
+	}
 
-  setLiftPower(0); //stops lift motors
-  setPincerPower(0); //stops lift motors
+	setLiftPower(0); //stops lift motors
+	setPincerPower(0); //stops lift motors
 
- 	//Clean
- 	setLeftDrivePower(0);
- 	setRightDrivePower(0);
+	//Clean
+	setLeftDrivePower(0);
+	setRightDrivePower(0);
 }
 
 task usercontrol()
 {
-  // User control code here, inside the loop
+	// User control code here, inside the loop
 
 	bool pinpointDrive = false;
 
-  while(true)
+	while(true)
 	{
 		int setPoint = 3000;
 
@@ -553,7 +554,7 @@ task usercontrol()
 			liftToPos(setPoint);
 		else setLiftPower(0);
 
-			//pincer
+		//pincer
 		if(leftTriggerDown == 1)
 			pincerToPos(0);
 		else if(leftTriggerUp == 1)
@@ -567,8 +568,157 @@ task usercontrol()
 	}
 }
 
-/*
+//Wait for Press--------------------------------------------------
+void waitForPress()
+{
+	while(nLCDButtons == 0){}
+	wait1Msec(5);
+}
+
+
+//Wait for Release------------------------------------------------
+void waitForRelease()
+{
+	while(nLCDButtons != 0){}
+	wait1Msec(5);
+}
+
 task LCDdisplay()
 {
+
+	const short leftButton = 1;
+	const short centerButton = 2;
+	const short rightButton = 4;
+	//Declare count variable to keep track of our choice
+	int count = 0;
+
+	//------------- Beginning of User Interface Code ---------------
+	//Clear LCD
+	clearLCDLine(0);
+	clearLCDLine(1);
+	//Loop while center button is not pressed
+	while(nLCDButtons != centerButton)
+	{
+		//Switch case that allows the user to choose from 4 different options
+		switch(count){
+		case 0:
+			//Display first choice
+			displayLCDCenteredString(0, "Autonomous 1");
+			displayLCDCenteredString(1, "<         Enter        >");
+			waitForPress();
+			//Increment or decrement "count" based on button press
+			if(nLCDButtons == leftButton)
+			{
+				waitForRelease();
+				count = 3;
+			}
+			else if(nLCDButtons == rightButton)
+			{
+				waitForRelease();
+				count++;
+			}
+			break;
+		case 1:
+			//Display second choice
+			displayLCDCenteredString(0, "Autonomous 2");
+			displayLCDCenteredString(1, "<         Enter        >");
+			waitForPress();
+			//Increment or decrement "count" based on button press
+			if(nLCDButtons == leftButton)
+			{
+				waitForRelease();
+				count--;
+			}
+			else if(nLCDButtons == rightButton)
+			{
+				waitForRelease();
+				count++;
+			}
+			break;
+		case 2:
+			//Display third choice
+			displayLCDCenteredString(0, "Autonomous 3");
+			displayLCDCenteredString(1, "<         Enter        >");
+			waitForPress();
+			//Increment or decrement "count" based on button press
+			if(nLCDButtons == leftButton)
+			{
+				waitForRelease();
+				count--;
+			}
+			else if(nLCDButtons == rightButton)
+			{
+				waitForRelease();
+				count++;
+			}
+			break;
+		case 3:
+			//Display fourth choice
+			displayLCDCenteredString(0, "Autonomous 4");
+			displayLCDCenteredString(1, "<         Enter        >");
+			waitForPress();
+			//Increment or decrement "count" based on button press
+			if(nLCDButtons == leftButton)
+			{
+				waitForRelease();
+				count--;
+			}
+			else if(nLCDButtons == rightButton)
+			{
+				waitForRelease();
+				count = 0;
+			}
+			break;
+		default:
+			count = 0;
+			break;
+		}
+	}
+	//------------- End of User Interface Code ---------------------
+
+	//------------- Beginning of Robot Movement Code ---------------
+	//Clear LCD
+	clearLCDLine(0);
+	clearLCDLine(1);
+	//Switch Case that actually runs the user choice
+	switch(count){
+	case 0:
+		//If count = 0, run the code correspoinding with choice 1
+		displayLCDCenteredString(0, "Autonomous 1");
+		displayLCDCenteredString(1, "is running!");
+		wait1Msec(2000);                        // Robot waits for 2000 milliseconds
+
+
+
+		break;
+		case 1:
+		//If count = 1, run the code correspoinding with choice 2
+		displayLCDCenteredString(0, "Autonomous 2");
+		displayLCDCenteredString(1, "is running!");
+		wait1Msec(2000);                        // Robot waits for 2000 milliseconds
+
+		break;
+	case 2:
+		//If count = 2, run the code correspoinding with choice 3
+		displayLCDCenteredString(0, "Autonomous 3");
+		displayLCDCenteredString(1, "is running!");
+		wait1Msec(2000);                        // Robot waits for 2000 milliseconds
+
+		break;
+	case 3:
+		//If count = 3, run the code correspoinding with choice 4
+		displayLCDCenteredString(0, "Autonomous 4");
+		displayLCDCenteredString(1, "is running!");
+		wait1Msec(2000);                        // Robot waits for 2000 milliseconds
+
+
+		break;
+
+	default:
+		displayLCDCenteredString(0, "No valid choice");
+		displayLCDCenteredString(1, "was made!");
+		break;
+	}
+	//------------- End of Robot Movement Code -----------------------
+
 }
-*/
