@@ -585,118 +585,85 @@ void waitForRelease()
 
 task LCDdisplay()
 {
+	//btns
+	const short leftBtn = 1;
+	const short centerBtn = 2;
+	const short rightBtn = 4;
 
-	const short leftButton = 1;
-	const short centerButton = 2;
-	const short rightButton = 4;
-	//Declare count variable to keep track of our choice
-	int count = 0;
+	//pos
+	int pos = 0;
 
-	//------------- Beginning of User Interface Code ---------------
-	//Clear LCD
 	clearLCDLine(0);
 	clearLCDLine(1);
-	//Loop while center button is not pressed
 
-		while(nLCDButtons != centerButton)
+	while(nLCDButtons != centerBtn)
+	{
+		if(pos == 0)
 		{
-			//Switch case that allows the user to choose from 4 different options
-			switch(count){
-			case 0:
-				//Display first choice
-				displayLCDCenteredString(0, "Programming Skills ");
-				displayLCDCenteredString(1, "<         Enter        >");
-				waitForPress();
-				//Increment or decrement "count" based on button press
-				if(nLCDButtons == leftButton)
-				{
-					waitForRelease();
-					count = 2;
-				}
-				else if(nLCDButtons == rightButton)
-				{
-					waitForRelease();
-					count++;
-				}
-				break;
-			case 1:
-				//Display second choice
-				displayLCDCenteredString(0, "Autonomous");
-				displayLCDCenteredString(1, "<         Enter        >");
-				waitForPress();
-				//Increment or decrement "count" based on button press
-				if(nLCDButtons == leftButton)
-				{
-					waitForRelease();
-					count--;
-				}
-				else if(nLCDButtons == rightButton)
-				{
-					waitForRelease();
-					count++;
-				}
-				break;
-			case 2:
-				//Display third choice
-				displayLCDCenteredString(0, "Driver Control");
-				displayLCDCenteredString(1, "<         Enter        >");
-				waitForPress();
-				//Increment or decrement "count" based on button press
-				if(nLCDButtons == leftButton)
-				{
-					waitForRelease();
-					count--;
-				}
-				else if(nLCDButtons == rightButton)
-				{
-					waitForRelease();
-					count = 0;
-				}
-				break;
+			displayLCDCenteredString(0, "Driver Skills");
+			displayLCDCenteredString(1, "< Enter >");
 
-			default:
-				count = 0;
-				break;
+			waitForPress();
+
+			if(nLCDButtons == leftBtn)
+			{
+				waitForRelease();
+				pos = 2;
+			}
+
+			else if(nLCDButtons == rightBtn)
+			{
+				waitForRelease();
+				pos = 0;
+			}
+
+		}
+
+		else if(pos == 1)
+		{
+			displayLCDCenteredString(0, "Autonomous");
+			displayLCDCenteredString(1, "< Enter >");
+
+			waitForPress();
+
+			if(nLCDButtons == leftBtn)
+			{
+				waitForRelease();
+				pos = 0;
+			}
+
+			else if(nLCDButtons == rightBtn)
+			{
+				waitForRelease();
+				pos = 2;
 			}
 		}
-		//------------- End of User Interface Code ---------------------
 
-		//Clear LCD
-		clearLCDLine(0);
-		clearLCDLine(1);
-		//Switch Case that actually runs the user choice
-		switch(count){
-		case 0:
-			//If count = 0, run the code correspoinding with choice 1
-			displayLCDCenteredString(0, "Programming Skills");
-			displayLCDCenteredString(1, "prog skills: on");
-			wait1Msec(2000);                        // Robot waits for 2000 milliseconds
+		else if(pos == 2)
+		{
+			displayLCDCenteredString(0, "Prog Skills");
+			displayLCDCenteredString(1, "< Enter >");
 
+			waitForPress();
 
+			if(nLCDButtons == leftBtn)
+			{
+				waitForRelease();
+				pos = 1;
+			}
 
-			break;
-		case 1:
-			//If count = 1, run the code correspoinding with choice 2
-			displayLCDCenteredString(0, "Autonomous");
-			displayLCDCenteredString(1, "auton: on");
-			wait1Msec(2000);                        // Robot waits for 2000 milliseconds
-
-			break;
-		case 2:
-			//If count = 2, run the code correspoinding with choice 3
-			displayLCDCenteredString(0, "Driver Control");
-			displayLCDCenteredString(1, "Driver");
-			wait1Msec(2000);                        // Robot waits for 2000 milliseconds
-
-			break;
-
-
-		default:
-			displayLCDCenteredString(0, "No valid choice");
-			displayLCDCenteredString(1, "was made!");
-			break;
+			else if(nLCDButtons == rightBtn)
+			{
+				waitForRelease();
+				pos = 0;
+			}
 		}
 
-
+		else
+		{
+			waitForPress();
+			displayLCDCenteredString(0, "Nothing Selected");
+		}
+	}
 
 }
