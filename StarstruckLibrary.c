@@ -17,6 +17,8 @@
 
 #pragma systemFile
 
+int lcdButton2;
+
 void setLiftPower(int power)
 {
 	motor[liftRightExtremes] = power;
@@ -62,6 +64,7 @@ void driveForDistance(int numClicks, int power, int stopPower = -6)
 	SensorValue(rightEncoder) = 0;
 	int leftEn = 0;
 	int rightEn = 0;
+	int bufferZone = 30;
 
 	while(leftEn < numClicks || rightEn < numClicks)
 	{
@@ -69,20 +72,20 @@ void driveForDistance(int numClicks, int power, int stopPower = -6)
 		rightEn = abs(SensorValue(rightEncoder));
 		setLeftDrivePower(power);
 		setRightDrivePower(power);
-		if(leftEn >= rightEn + 50) //left side 50 or more clicks ahead
+		if(leftEn >= rightEn + bufferZone) //left side 50 or more clicks ahead
 		{
-			if(power - 45 <= 0)
+			if(power - (bufferZone - 5) <= 0)
 				setLeftDrivePower(0);
 			else
-				setLeftDrivePower(power - 45); //may need to be changed
+				setLeftDrivePower(power - (bufferZone - 5)); //may need to be changed
 
 		}
-		else if(rightEn >= leftEn + 50)
+		else if(rightEn >= leftEn + bufferZone)
 		{
-			if(power - 45 <= 0)
+			if(power - (bufferZone - 5) <= 0)
 				setRightDrivePower(0);
 			else
-				setRightDrivePower(power - 45); //may need to be changed
+				setRightDrivePower(power - (bufferZone - 5)); //may need to be changed
 		}
 
 		if(rightEn >= numClicks)
@@ -95,7 +98,7 @@ void driveForDistance(int numClicks, int power, int stopPower = -6)
 	setLeftDrivePower(0);
 	setRightDrivePower(0);
 }
-void driveBackForDistance(int numClicks, int power, int stopPower)
+void driveBackForDistance(int numClicks, int power, int stopPower = 6)
 {
 	SensorValue(leftEncoder) = 0;
 	SensorValue(rightEncoder) = 0;
@@ -566,104 +569,4 @@ task usercontrol()
 		else
 			setPincerPower(0);
 	}
-}
-
-//Wait for Press--------------------------------------------------
-void waitForPress()
-{
-	while(nLCDButtons == 0){}
-	wait1Msec(5);
-}
-
-
-//Wait for Release------------------------------------------------
-void waitForRelease()
-{
-	while(nLCDButtons != 0){}
-	wait1Msec(5);
-}
-
-task LCDdisplay()
-{
-	//btns
-	const short leftBtn = 1;
-	const short centerBtn = 2;
-	const short rightBtn = 4;
-
-	//pos
-	int pos = 0;
-
-	clearLCDLine(0);
-	clearLCDLine(1);
-
-	while(nLCDButtons != centerBtn)
-	{
-		if(pos == 0)
-		{
-			displayLCDCenteredString(0, "Driver Skills");
-			displayLCDCenteredString(1, "< Enter >");
-
-			waitForPress();
-
-			if(nLCDButtons == leftBtn)
-			{
-				waitForRelease();
-				pos = 2;
-			}
-
-			else if(nLCDButtons == rightBtn)
-			{
-				waitForRelease();
-				pos = 0;
-			}
-
-		}
-
-		else if(pos == 1)
-		{
-			displayLCDCenteredString(0, "Autonomous");
-			displayLCDCenteredString(1, "< Enter >");
-
-			waitForPress();
-
-			if(nLCDButtons == leftBtn)
-			{
-				waitForRelease();
-				pos = 0;
-			}
-
-			else if(nLCDButtons == rightBtn)
-			{
-				waitForRelease();
-				pos = 2;
-			}
-		}
-
-		else if(pos == 2)
-		{
-			displayLCDCenteredString(0, "Prog Skills");
-			displayLCDCenteredString(1, "< Enter >");
-
-			waitForPress();
-
-			if(nLCDButtons == leftBtn)
-			{
-				waitForRelease();
-				pos = 1;
-			}
-
-			else if(nLCDButtons == rightBtn)
-			{
-				waitForRelease();
-				pos = 0;
-			}
-		}
-
-		else
-		{
-			waitForPress();
-			displayLCDCenteredString(0, "Nothing Selected");
-		}
-	}
-
 }
