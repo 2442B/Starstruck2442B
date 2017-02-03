@@ -69,20 +69,21 @@ void driveForDistance(int numClicks, int power, int stopPower = -6)
 		rightEn = abs(SensorValue(rightEncoder));
 		setLeftDrivePower(power);
 		setRightDrivePower(power);
-		if(leftEn >= rightEn + 50) //left side 50 or more clicks ahead
+		int bufferZone = 50;
+		if(leftEn >= rightEn + bufferZone) //left side 50 or more clicks ahead
 		{
-			if(power - 45 <= 0)
+			if(power - (bufferZone - 5) <= 0)
 				setLeftDrivePower(0);
 			else
-				setLeftDrivePower(power - 45); //may need to be changed
+				setLeftDrivePower(power - (bufferZone - 5)); //may need to be changed
 
 		}
-		else if(rightEn >= leftEn + 50)
+		else if(rightEn >= leftEn + bufferZone)
 		{
-			if(power - 45 <= 0)
+			if(power - (bufferZone - 5) <= 0)
 				setRightDrivePower(0);
 			else
-				setRightDrivePower(power - 45); //may need to be changed
+				setRightDrivePower(power - (bufferZone - 5)); //may need to be changed
 		}
 
 		if(rightEn >= numClicks)
@@ -108,10 +109,28 @@ void driveBackForDistance(int numClicks, int power, int stopPower)
 		rightEn = -SensorValue(rightEncoder); //going to negative
 		setLeftDrivePower(power);
 		setRightDrivePower(power);
-		if(leftEn <= rightEn - 10)
+		int bufferZone = 10;
+
+		if(leftEn <= rightEn - bufferZone)
 			setLeftDrivePower(0); //left side 50 or more clicks ahead, may need to be changed
-		else if(rightEn <= leftEn - 10)
+		else if(rightEn <= leftEn - bufferZone)
 			setRightDrivePower(0); //may need to be changed
+		/*if(leftEn >= rightEn + bufferZone) //left side 50 or more clicks ahead
+		{
+		if(power - (bufferZone - 5) <= 0)
+		setLeftDrivePower(0);
+		else
+		setLeftDrivePower(power - (bufferZone - 5)); //may need to be changed
+
+		}
+		else if(rightEn >= leftEn + bufferZone)
+		{
+		if(power - (bufferZone - 5) <= 0)
+		setRightDrivePower(0);
+		else
+		setRightDrivePower(power - (bufferZone - 5)); //may need to be changed
+		}*/
+
 
 		if(rightEn <= numClicks)
 			setRightDrivePower(0);
@@ -276,15 +295,15 @@ void runProgSkills(string side)
 	//phase II : get cube in the middle and launch
 
 	//drive to line up with middle
-
+	/*
 	driveForDistance(550, 127, -6);
 	wait1Msec(250);
 
 	//turn
 	if(side == "right")
-		turnClockwise(90);
+	turnClockwise(90);
 	else if(side == "left")
-		turnCounterClockwise(90);
+	turnCounterClockwise(90);
 
 	wait1Msec(250);
 
@@ -300,9 +319,9 @@ void runProgSkills(string side)
 
 	//turn
 	if(side == "right")
-		turnCounterClockwise(140);
+	turnCounterClockwise(140);
 	else if(side == "left")
-		turnClockwise(140);
+	turnClockwise(140);
 
 	wait1Msec(250);
 
@@ -322,12 +341,12 @@ void runProgSkills(string side)
 	//phase IV : spin and grab star
 
 	//sets pincers to be on sides of robot
-	/*
+
 	for(int i = 0; i < 1500; i++)
 	{
 	pincerToPos(3200);
 	wait1Msec(1);
-	}*/
+	}
 
 	//move away from fence a little bit
 	driveForDistance(250, 127, -6);
@@ -335,15 +354,15 @@ void runProgSkills(string side)
 
 	//turn
 	if(side == "right")
-		turnClockwise(115);
+	turnClockwise(115);
 	else if(side == "left")
-		turnCounterClockwise(115);
+	turnCounterClockwise(115);
 
 	wait1Msec(250);
 	for(int i = 0; i < 1000; i++)
 	{
-		pincerToPos(1030);
-		wait1Msec(1);
+	pincerToPos(1030);
+	wait1Msec(1);
 	}
 
 	driveForDistance(100, 127, -6);
@@ -352,8 +371,8 @@ void runProgSkills(string side)
 	wait1Msec(250);
 	for(int i = 0; i < 1000; i++) //open claw again
 	{
-		pincerToPos(1030);
-		wait1Msec(1);
+	pincerToPos(1030);
+	wait1Msec(1);
 	}
 	driveForDistance(50, 127, -6); //move forward a little
 	wait1Msec(250);
@@ -362,13 +381,13 @@ void runProgSkills(string side)
 
 	//turn - may need to change
 	if(side == "right")
-		turnCounterClockwise(115);
+	turnCounterClockwise(115);
 	else if(side == "left")
-		turnClockwise(115);
+	turnClockwise(115);
 
 	wait1Msec(250);
 	driveBackForDistance(-250, -127, 6); //may need changing
-	launch();
+	launch(); */
 }
 
 /*
@@ -407,7 +426,7 @@ auton ideas:
 //1: don't remember
 
 
-void runCompAuton(string side)
+void runCompAuton(string side, int autonNum)
 {
 	if(side != "right" && side != "left") return;
 
@@ -435,58 +454,59 @@ void runCompAuton(string side)
 		wait1Msec(1);
 	} //close claw to get out of way
 
-	//spin 180 to prepare for driver control only when commenting out the following code is commented, add this to "secondary auton"
-	/*
-	if(side == "right")
-	turnCounterClockwise(180);
-	else if(side == "left")
-	turnClockwise(180);
-	*/
 
-	//BEGIN COMMENT
-
-	if(side == "left")
-		turnClockwise(100); //90 deg, but kinda guess and check - turn right
-	else if(side == "right")
-		turnCounterClockwise(100); //turn left
-	wait1Msec(500);
-
-	liftToPos(3200);
-	driveForDistance(900, 127, -20); //parallel to fence
-
-	if(side == "left")
-		turnClockwise(125); //turn to face cube
-	else if(side == "right")
-		turnCounterClockwise(125); //turn to face cube
-
-	wait1Msec(750);
-	setLiftPower(0);
-	driveForDistance(250, 127, -10); //forward to snag cube
-	setPincerPower(-127); //maybe works, hopefully holds pincer shut
-	wait1Msec(2000);
-	driveBackForDistance(-300, -127, 10); //back to fence
-	setLiftPower(127);
-
-	//CHANGED during competition
-	wait1Msec(1500);
-	setLiftPower(0);
-
-	for(int i = 0; i < 1000; i++)
+	if(autonNum == 1) //main auton - will only run if running auton "1"
 	{
-		pincerToPos(1030); //open pincer (should drop cube)
-		wait1Msec(1);
-	}
-	wait1Msec(250);
-	for(int i = 0; i < 250; i++)
+		if(side == "left")
+			turnClockwise(100); //90 deg, but kinda guess and check - turn right
+		else if(side == "right")
+			turnCounterClockwise(100); //turn left
+		wait1Msec(500);
+
+		liftToPos(3200);
+		driveForDistance(900, 127, -20); //parallel to fence
+
+		if(side == "left")
+			turnClockwise(125); //turn to face cube
+		else if(side == "right")
+			turnCounterClockwise(125); //turn to face cube
+
+		wait1Msec(750);
+		setLiftPower(0);
+		driveForDistance(250, 127, -10); //forward to snag cube
+		setPincerPower(-127); //maybe works, hopefully holds pincer shut
+		wait1Msec(2000);
+		driveBackForDistance(-300, -127, 10); //back to fence
+		setLiftPower(127);
+
+		//CHANGED during competition
+		wait1Msec(1500);
+		setLiftPower(0);
+
+		for(int i = 0; i < 1000; i++)
+		{
+			pincerToPos(1030); //open pincer (should drop cube)
+			wait1Msec(1);
+		}
+		wait1Msec(250);
+		for(int i = 0; i < 250; i++)
+		{
+			pincerToPos(0);
+			wait1Msec(1);
+		}
+		//starts to drive back
+		driveForDistance(100, 127, -6);
+
+	} //end of section included for auton "1"
+
+	else if(autonNum == 2) //will only run if running auton "2"
 	{
-		pincerToPos(0);
-		wait1Msec(1);
-	}
-	//starts to drive back
-	driveForDistance(100, 127, -6);
-
-
-	//END COMMENT
+		//spin 180 to prepare for driver control only when commenting out the following code is commented,
+		if(side == "right")
+			turnCounterClockwise(180);
+		else if(side == "left")
+			turnClockwise(180);
+	} //end of section included for auton "2"
 
 	//lowers lift
 	for(int i = 0; i < 750; i++)
