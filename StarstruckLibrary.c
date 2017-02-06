@@ -15,6 +15,13 @@
 #pragma config(Motor,  port10,          leftPincer,    tmotorVex393_HBridge, openLoop, reversed)
 #pragma config(UART_Usage, UART2, uartVEXLCD, baudRate19200, IOPins, None, None)
 
+#define BCI_USE_TIMER
+#define BCI_USE_PID_OPT
+#define BCI_USE_POS_PID
+#define BCI_USE_MOTORCONTROL
+
+#include "..\BCI\BCI.h"
+
 #pragma systemFile
 
 int lcdButton2;
@@ -40,13 +47,19 @@ void liftToPos(int angle)
 
 void setLeftDrivePower(int power)
 {
-	motor[driveLeftBack] = power;
-	motor[driveLeftFront] = power;
+	addMotor(driveLeftFront);
+	addMotor(driveLeftBack);
+	startTask(motorSlewRateTask);
+	setMotorSpeed(driveLeftFront, power);
+	setMotorSpeed(driveLeftBack, power);
 }
 void setRightDrivePower(int power)
 {
-	motor[driveRightBack] = power;
-	motor[driveRightFront] = power;
+	addMotor(driveRightFront);
+	addMotor(driveRightBack);
+	startTask(motorSlewRateTask);
+	setMotorSpeed(driveRightFront, power);
+	setMotorSpeed(driveRightBack, power);
 }
 
 void driveForTime(int time, int power)
@@ -58,146 +71,64 @@ void driveForTime(int time, int power)
 	setLeftDrivePower(0);
 	setRightDrivePower(0);
 }
-void driveForDistance(int numClicks, int power, int stopPower = -6)
+
+void driveForDistance(int distance)
 {
-	SensorValue(leftEncoder) = 0;
-	SensorValue(rightEncoder) = 0;
-	int leftEn = 0;
-	int rightEn = 0;
-	int bufferZone = 30;
+	tMotor leftMotors[2] = {driveLeftFront, driveLeftBack};
+	tMotor rightMotors[2] = {driveRightFront, driveRightBack};
 
-	while(leftEn < numClicks || rightEn < numClicks)
-	{
-		leftEn = abs(SensorValue(leftEncoder));
-		rightEn = abs(SensorValue(rightEncoder));
-		setLeftDrivePower(power);
-		setRightDrivePower(power);
+	pos_PID distancePID, anglePID;
+	pos_PID_InitController(&distancePID, NULL, 0.3, 0.2, 0.1); //NEED NUMBERS
+ 	pos_PID_InitController(&anglePID, NULL, 0.3, 0.2, 0.1); //NEED NUMBERS
 
-		int bufferZone = 50;
-		if(leftEn >= rightEn + bufferZone) //left side 50 or more clicks ahead
-		{
-			if(power - 45 <= 0)
-				setLeftDrivePower(0);
-			else
-				setLeftDrivePower(power - 45); //may need to be changed
-
-		}
-		else if(rightEn >= leftEn + bufferZone)
-		{
-			if(power - 45 <= 0)
-				setRightDrivePower(0);
-			else
-				setRightDrivePower(power - 45); //may need to be changed
-		}
-
-		if(rightEn >= numClicks)
-			setRightDrivePower(0);
-		else if(leftEn >= numClicks)
-			setLeftDrivePower(0);
-	}
-	driveForTime(100,stopPower); //prevents glide
-
-	setLeftDrivePower(0);
-	setRightDrivePower(0);
-}
-void driveBackForDistance(int numClicks, int power, int stopPower = 6)
-{
-	SensorValue(leftEncoder) = 0;
-	SensorValue(rightEncoder) = 0;
-	int leftEn = 0;
-	int rightEn = 0;
-
-	while(leftEn > numClicks || rightEn > numClicks)
-	{
-		leftEn = SensorValue(leftEncoder); //going to negative
-		rightEn = -SensorValue(rightEncoder); //going to negative
-		setLeftDrivePower(power);
-		setRightDrivePower(power);
-		int bufferZone = 10;
-
-		if(leftEn <= rightEn - bufferZone)
-			setLeftDrivePower(0); //left side 50 or more clicks ahead, may need to be changed
-		else if(rightEn <= leftEn - bufferZone)
-			setRightDrivePower(0); //may need to be changed
-		/*if(leftEn >= rightEn + bufferZone) //left side 50 or more clicks ahead
-		{
-		if(power - (bufferZone - 5) <= 0)
-		setLeftDrivePower(0);
-		else
-		setLeftDrivePower(power - (bufferZone - 5)); //may need to be changed
-
-		}
-		else if(rightEn >= leftEn + bufferZone)
-		{
-		if(power - (bufferZone - 5) <= 0)
-		setRightDrivePower(0);
-		else
-		setRightDrivePower(power - (bufferZone - 5)); //may need to be changed
-		}*/
-
-
-		if(rightEn <= numClicks)
-			setRightDrivePower(0);
-		else if(leftEn <= numClicks)
-			setLeftDrivePower(0);
-	}
-	driveForTime(100,stopPower); //prevents glide
-
-	setLeftDrivePower(0);
-	setRightDrivePower(0);
-}
-
-void turnClockwise(int angle)
-{
-	SensorValue(leftEncoder) = 0;
-	SensorValue(rightEncoder) = 0;
-
-	float convAngle = (angle * 232) / 90;
-	int leftEn = 0;
-	int rightEn = 0;
-
-	while(leftEn < convAngle || rightEn < convAngle)
-	{
-		leftEn = SensorValue(leftEncoder);
-		rightEn = SensorValue(rightEncoder);
-
-		setLeftDrivePower(127);
-		setRightDrivePower(-127);
-
-		if(leftEn >= convAngle)
-			setLeftDrivePower(0);
-		if(rightEn <= -convAngle)
-			setRightDrivePower(0);
-	}
-	setLeftDrivePower(-10);
-	setRightDrivePower(10);
+ 	PID_Opt_DriveStraight(distance, leftMotors, rightMotors, 2, leftEncoder, rightEncoder, &distancePID, &anglePID); //TEST FOR NEGATIVE NUMS
 }
 
 void turnCounterClockwise(int angle)
 {
-	SensorValue(leftEncoder) = 0;
-	SensorValue(rightEncoder) = 0;
+	float conv_angle = angle * (2); //NEED NUMS
 
-	int leftEn = 0;
-	int rightEn = 0;
+	pos_PID leftPID;
+	pos_PID rightPID;
 
-	float convAngle = (angle * 190) / 90;
+	pos_PID_InitController(&leftPID, leftEncoder, 1, 2, 3); //NEED VALUES
+	pos_PID_InitController(&rightPID, rightEncoder, 1, 2, 3); //NEED VALUES
 
-	while(leftEn > -convAngle || rightEn > -convAngle)
+	pos_PID_SetTargetPosition(&leftPID, -conv_angle);
+	pos_PID_SetTargetPosition(&rightPID, conv_angle);
+
+	int leftPower, rightPower;
+	do
 	{
-		leftEn = SensorValue(leftEncoder); //going to negative
-		rightEn = SensorValue(rightEncoder); //going to negative as well
+		leftPower = pos_PID_StepController(&leftPID);
+		rightPower = pos_PID_StepController(&rightPID);
+		setLeftDrivePower(leftPower);
+		setRightDrivePower(rightPower);
+	} while(abs(leftPower) <= 5 && abs(rightPower) <= 5);
+}
 
-		setLeftDrivePower(-127);
-		setRightDrivePower(127);
+void turnClockwise(int angle)
+{
+	float conv_angle = angle * (2); //NEED NUMS
 
-		if(leftEn <= -convAngle)
-			setLeftDrivePower(0);
-		if(rightEn <= -convAngle)
-			setRightDrivePower(0);
-	}
-	setLeftDrivePower(10);
-	setRightDrivePower(-10);
+	pos_PID leftPID;
+	pos_PID rightPID;
+
+	pos_PID_InitController(&leftPID, leftEncoder, 1, 2, 3); //NEED VALUES
+	pos_PID_InitController(&rightPID, rightEncoder, 1, 2, 3); //NEED VALUES
+
+	pos_PID_SetTargetPosition(&leftPID, conv_angle);
+	pos_PID_SetTargetPosition(&rightPID, -conv_angle);
+
+	int leftPower;
+	int rightPower;
+	do
+	{
+		leftPower = pos_PID_StepController(&leftPID);
+		rightPower = pos_PID_StepController(&rightPID);
+		setLeftDrivePower(leftPower);
+		setRightDrivePower(rightPower);
+	} while(abs(leftPower) <= 5 && abs(rightPower) <= 5);
 }
 
 
@@ -273,7 +204,7 @@ void runProgSkills(string side)
 
 	//phase I : preloads
 	//claw starts on sides
-	driveBackForDistance(-300, -127, 6);
+	driveForDistance(-300);
 	//program edit - NEEDS TESTING
 	//driveForDistance(100, 127, -6); //drives back
 	wait1Msec(500);
@@ -282,17 +213,17 @@ void runProgSkills(string side)
 	setLiftPower(-100);
 	wait1Msec(1000);  //waits
 	setLiftPower(0);
-	driveBackForDistance(-900, -127, 6); //drives back to fence
+	driveForDistance(-900); //drives back to fence
 	launch(); //launch() leaves claw open
 
 
 	//Do it again!
 	for(int i = 0; i < 3; i++) //2 cubes and 2 groups of stars
 	{
-		driveForDistance(900, 127, -6);
+		driveForDistance(900);
 		setPincerPower(-127);
 		wait1Msec(1000);
-		driveBackForDistance(-900, -127, 6);
+		driveForDistance(-900);
 		launch();
 	}
 
@@ -434,14 +365,14 @@ void runCompAuton(string side, int autonNum)
 {
 	if(side != "right" && side != "left") return;
 
-	driveForDistance(500, 127, -6);
+	driveForDistance(500);
 	for(int i = 0; i < 1000; i++)
 	{
 		pincerToPos(1900); //claw to 90
 		wait1Msec(1);
 	}
 	setPincerPower(0);
-	driveForDistance(365, 127, -6); //drive to fence
+	driveForDistance(365); //drive to fence
 
 	for(int i = 0; i < 750; i++)
 	{
@@ -468,7 +399,7 @@ void runCompAuton(string side, int autonNum)
 		wait1Msec(500);
 
 		liftToPos(3200);
-		driveForDistance(900, 127, -20); //parallel to fence
+		driveForDistance(900); //parallel to fence
 
 		if(side == "left")
 			turnClockwise(125); //turn to face cube
@@ -477,10 +408,10 @@ void runCompAuton(string side, int autonNum)
 
 		wait1Msec(750);
 		setLiftPower(0);
-		driveForDistance(250, 127, -10); //forward to snag cube
+		driveForDistance(250); //forward to snag cube
 		setPincerPower(-127); //maybe works, hopefully holds pincer shut
 		wait1Msec(2000);
-		driveBackForDistance(-300, -127, 10); //back to fence
+		driveForDistance(-300); //back to fence
 		setLiftPower(127);
 
 		//CHANGED during competition
@@ -499,7 +430,7 @@ void runCompAuton(string side, int autonNum)
 			wait1Msec(1);
 		}
 		//starts to drive back
-		driveForDistance(100, 127, -6);
+		driveForDistance(100);
 
 	} //end of section included for auton "1"
 
