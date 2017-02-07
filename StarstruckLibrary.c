@@ -153,10 +153,10 @@ bool PID_Opt_DriveStraight(const int distance, tMotor *leftMotors, tMotor *right
 	}
 
 	for (i = 0; i < numMotors; i++)
-		{
-			motor[*(leftMotors + i)] = 0;
-			motor[*(rightMotors + i)] = 0;
-		}
+	{
+		motor[*(leftMotors + i)] = 0;
+		motor[*(rightMotors + i)] = 0;
+	}
 
 	return true;
 }
@@ -170,9 +170,10 @@ void driveForDistance(int distance)
 	pos_PID_InitController(&distancePID, NULL, 0.4, 0.5, 0.5); //NEED NUMBERS
  	pos_PID_InitController(&anglePID, NULL, 0, 0, 0); //NEED NUMBERS
 
- 	PID_Opt_DriveStraight(distance, leftMotors, rightMotors, 2, leftEncoder, rightEncoder, &distancePID, &anglePID); //TEST FOR NEGATIVE NUMS
 
- 	}
+	PID_Opt_DriveStraight(distance, leftMotors, rightMotors, 2, leftEncoder, rightEncoder, &distancePID, &anglePID); //TEST FOR NEGATIVE NUMS
+
+}
 
 void turnCounterClockwise(int angle)
 {
@@ -224,15 +225,15 @@ void turnClockwise(int angle)
 
 
 /*
- ______   __                               ______                   __                 ______     __                           __                    __    __
+______   __                               ______                   __                 ______     __                           __                    __    __
 /      \ |  \                             /      \                 |  \               /      \   |  \                         |  \                  |  \  |  \
 |  $$$$$$\| $$  ______   __   __   __     |  $$$$$$\  ______    ____| $$  ______      |  $$$$$$\ _| $$_     ______    ______  _| $$_     _______     | $$  | $$  ______    ______    ______
 | $$   \$$| $$ |      \ |  \ |  \ |  \    | $$   \$$ /      \  /      $$ /      \     | $$___\$$|   $$ \   |      \  /      \|   $$ \   /       \    | $$__| $$ /      \  /      \  /      \
 | $$      | $$  \$$$$$$\| $$ | $$ | $$    | $$      |  $$$$$$\|  $$$$$$$|  $$$$$$\     \$$    \  \$$$$$$    \$$$$$$\|  $$$$$$\\$$$$$$  |  $$$$$$$    | $$    $$|  $$$$$$\|  $$$$$$\|  $$$$$$\
 | $$   __ | $$ /      $$| $$ | $$ | $$    | $$   __ | $$  | $$| $$  | $$| $$    $$     _\$$$$$$\  | $$ __  /      $$| $$   \$$ | $$ __  \$$    \     | $$$$$$$$| $$    $$| $$   \$$| $$    $$
 | $$__/  \| $$|  $$$$$$$| $$_/ $$_/ $$    | $$__/  \| $$__/ $$| $$__| $$| $$$$$$$$    |  \__| $$  | $$|  \|  $$$$$$$| $$       | $$|  \ _\$$$$$$\    | $$  | $$| $$$$$$$$| $$      | $$$$$$$$
- \$$    $$| $$ \$$    $$ \$$   $$   $$     \$$    $$ \$$    $$ \$$    $$ \$$     \     \$$    $$   \$$  $$ \$$    $$| $$        \$$  $$|       $$    | $$  | $$ \$$     \| $$       \$$     \
-  \$$$$$$  \$$  \$$$$$$$  \$$$$$\$$$$       \$$$$$$   \$$$$$$   \$$$$$$$  \$$$$$$$      \$$$$$$     \$$$$   \$$$$$$$ \$$         \$$$$  \$$$$$$$      \$$   \$$  \$$$$$$$ \$$        \$$$$$$$
+\$$    $$| $$ \$$    $$ \$$   $$   $$     \$$    $$ \$$    $$ \$$    $$ \$$     \     \$$    $$   \$$  $$ \$$    $$| $$        \$$  $$|       $$    | $$  | $$ \$$     \| $$       \$$     \
+\$$$$$$  \$$  \$$$$$$$  \$$$$$\$$$$       \$$$$$$   \$$$$$$   \$$$$$$$  \$$$$$$$      \$$$$$$     \$$$$   \$$$$$$$ \$$         \$$$$  \$$$$$$$      \$$   \$$  \$$$$$$$ \$$        \$$$$$$$
 
 */
 
@@ -320,15 +321,14 @@ void runProgSkills(string side)
 	//phase II : get cube in the middle and launch
 
 	//drive to line up with middle
-	/*
 	driveForDistance(550, 127, -6);
 	wait1Msec(250);
 
 	//turn
 	if(side == "right")
-	turnClockwise(90);
+		turnClockwise(90);
 	else if(side == "left")
-	turnCounterClockwise(90);
+		turnCounterClockwise(90);
 
 	wait1Msec(250);
 
@@ -344,9 +344,9 @@ void runProgSkills(string side)
 
 	//turn
 	if(side == "right")
-	turnCounterClockwise(140);
+		turnCounterClockwise(140);
 	else if(side == "left")
-	turnClockwise(140);
+		turnClockwise(140);
 
 	wait1Msec(250);
 
@@ -369,8 +369,8 @@ void runProgSkills(string side)
 
 	for(int i = 0; i < 1500; i++)
 	{
-	pincerToPos(3200);
-	wait1Msec(1);
+		pincerToPos(3200);
+		wait1Msec(1);
 	}
 
 	//move away from fence a little bit
@@ -379,15 +379,15 @@ void runProgSkills(string side)
 
 	//turn
 	if(side == "right")
-	turnClockwise(115);
+		turnClockwise(115);
 	else if(side == "left")
-	turnCounterClockwise(115);
+		turnCounterClockwise(115);
 
 	wait1Msec(250);
 	for(int i = 0; i < 1000; i++)
 	{
-	pincerToPos(1030);
-	wait1Msec(1);
+		pincerToPos(1030);
+		wait1Msec(1);
 	}
 
 	driveForDistance(100, 127, -6);
@@ -396,8 +396,8 @@ void runProgSkills(string side)
 	wait1Msec(250);
 	for(int i = 0; i < 1000; i++) //open claw again
 	{
-	pincerToPos(1030);
-	wait1Msec(1);
+		pincerToPos(1030);
+		wait1Msec(1);
 	}
 	driveForDistance(50, 127, -6); //move forward a little
 	wait1Msec(250);
@@ -406,52 +406,16 @@ void runProgSkills(string side)
 
 	//turn - may need to change
 	if(side == "right")
-	turnCounterClockwise(115);
+		turnCounterClockwise(115);
 	else if(side == "left")
-	turnClockwise(115);
+		turnClockwise(115);
 
 	wait1Msec(250);
 	driveBackForDistance(-250, -127, 6); //may need changing
-	launch(); */
+	launch();
 }
 
-/*
-auton ideas:
-
-- two seperate autons
-- one independent
-- one (or more?) to work alongside 2442A, 2442C
-- getting stars on the field [ideas below]
-- 3 stars in the back?
-- stars in the corners
-*other teams don't do this*
-- move toward stars on the fence holding claw up (possible application of tasks
--
-
-*/
-//sides - auton
-//format: side; results
-//for 2, 4 - see markers in code
-//qualifying
-//1: right; got cube, not stars
-//2: [REDOWNLOAD] right* - comment out for 2442C; got stars [cube: N/A]
-//3: right; got stars, not cube
-//4: right; got stars, not cube
-//Think* we have fixed it
-//5: right; got cube, not stars
-//6: [REDOWNLOAD] left* - comment out for 2442A; got stars [cube: N/A]
-//Skills break
-//7: [REDOWNLOAD] left* - comment out for 1615A; missed stars [cube: N/A]
-//8: [REDOWNLOAD] right;
-//quarterfinals
-//1: right; got stars
-//semifinals
-//1: right; got stars - lost auton
-//finals
-//1: don't remember
-
-
-void runCompAuton(string side, int autonNum)
+void runCompAuton(string side, int auto//nNum)
 {
 	if(side != "right" && side != "left") return;
 
