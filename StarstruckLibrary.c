@@ -129,6 +129,8 @@ bool PID_Opt_DriveStraight(const int distance, tMotor *leftMotors, tMotor *right
 		//Set motors to distance PID output with correction from angle PID
 		for (i = 0; i < numMotors; i++)
 		{
+			writeDebugStreamLine("distOutput: %i", distOutput);
+			//writeDebugStreamLine("angleOutput: %i", angleOutput);
 			motor[*(leftMotors + i)] = distOutput + angleOutput;
 			motor[*(rightMotors + i)] = distOutput - angleOutput;
 		}
@@ -165,8 +167,9 @@ void driveForDistance(int distance)
 	tMotor rightMotors[2] = {driveRightFront, driveRightBack};
 
 	pos_PID distancePID, anglePID;
-	pos_PID_InitController(&distancePID, NULL, 0.3, 0.2, 0.1); //NEED NUMBERS
-	pos_PID_InitController(&anglePID, NULL, 0.3, 0.2, 0.1); //NEED NUMBERS
+	pos_PID_InitController(&distancePID, NULL, 0.4, 0.5, 0.5); //NEED NUMBERS
+ 	pos_PID_InitController(&anglePID, NULL, 0, 0, 0); //NEED NUMBERS
+
 
 	PID_Opt_DriveStraight(distance, leftMotors, rightMotors, 2, leftEncoder, rightEncoder, &distancePID, &anglePID); //TEST FOR NEGATIVE NUMS
 
