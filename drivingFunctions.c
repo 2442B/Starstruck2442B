@@ -47,7 +47,8 @@ void driveStraight(const long distance)
 
   //Conversion between encoder degrees and base_link mm
 
-  const float conv = 1.311250;
+  //const float conv = 1.311250;
+	const float conv = 1;
 
 
 
@@ -67,9 +68,9 @@ void driveStraight(const long distance)
 
 	{
 
-		pos_PID_InitController(&distancePID, &distanceElapsed, 0.2, 0.2, 0.1);
+		pos_PID_InitController(&distancePID, &distanceElapsed, 0.25, 0.0, 0.0);
 
-		pos_PID_InitController(&anglePID, &angleChange, 0.5, 0.25, 0);
+		pos_PID_InitController(&anglePID, &angleChange, 0, 0, 0);
 
 	}
 
@@ -77,9 +78,9 @@ void driveStraight(const long distance)
 
 	{
 
-		pos_PID_InitController(&distancePID, &distanceElapsed, 0.3, 0.2, 0.2);
+		pos_PID_InitController(&distancePID, &distanceElapsed, 0.25, 0.0, 0.0);
 
-		pos_PID_InitController(&anglePID, &angleChange, 0.5, 0.5, 0);
+		pos_PID_InitController(&anglePID, &angleChange, 0, 0, 0);
 
 	}
 
