@@ -111,33 +111,33 @@ void runProgSkills(string side)
 
 	//phase I : preloads
 	//claw starts on sides
-	driveForDistance(-300);
+	driveStraight(-300);
 	//program edit - NEEDS TESTING
-	//driveForDistance(100, 127, -6); //drives back
+	//driveStraight(100, 127, -6); //drives back
 	wait1Msec(500);
 	setPincerPower(-127); //hopefully grabs star + fallen preload
 	wait1Msec(1000);
 	setLiftPower(-100);
 	wait1Msec(1000);  //waits
 	setLiftPower(0);
-	driveForDistance(-900); //drives back to fence
+	driveStraight(-900); //drives back to fence
 	launch(); //launch() leaves claw open
 
 
 	//Do it again!
 	for(int i = 0; i < 3; i++) //2 cubes and 2 groups of stars
 	{
-		driveForDistance(900);
+		driveStraight(900);
 		setPincerPower(-127);
 		wait1Msec(1000);
-		driveForDistance(-900);
+		driveStraight(-900);
 		launch();
 	}
 
 	//phase II : get cube in the middle and launch
 
 	//drive to line up with middle
-	driveForDistance(550, 127, -6);
+	driveStraight(550, 127, -6);
 	wait1Msec(250);
 
 	//turn
@@ -148,13 +148,13 @@ void runProgSkills(string side)
 
 	wait1Msec(250);
 
-	driveForDistance(400, 127, -6); //moves down center toward cube
+	driveStraight(400, 127, -6); //moves down center toward cube
 	wait1Msec(750);
 	setPincerPower(-127); //grabs cube
 	wait1Msec(1500); //place to possible change wait time
 	setPincerPower(0); //relax pincer motors b/c we are pushing
 
-	driveForDistance(1750, 127, -6); //drives to other end of field
+	driveStraight(1750, 127, -6); //drives to other end of field
 	setPincerPower(-127); //grabs cube again
 	wait1Msec(750); //longer wait time - turning with a cube
 
@@ -172,7 +172,7 @@ void runProgSkills(string side)
 
 	//phase III : move back and get last cube and launches
 
-	driveForDistance(700, 127, -6);
+	driveStraight(700, 127, -6);
 	wait1Msec(250);
 	setPincerPower(-127);
 	wait1Msec(250);
@@ -190,7 +190,7 @@ void runProgSkills(string side)
 	}
 
 	//move away from fence a little bit
-	driveForDistance(250, 127, -6);
+	driveStraight(250, 127, -6);
 	wait1Msec(250);
 
 	//turn
@@ -206,7 +206,7 @@ void runProgSkills(string side)
 		wait1Msec(1);
 	}
 
-	driveForDistance(100, 127, -6);
+	driveStraight(100, 127, -6);
 	wait1Msec(250);
 	setPincerPower(-127); //grab star - usually not very well
 	wait1Msec(250);
@@ -215,7 +215,7 @@ void runProgSkills(string side)
 		pincerToPos(1030);
 		wait1Msec(1);
 	}
-	driveForDistance(50, 127, -6); //move forward a little
+	driveStraight(50, 127, -6); //move forward a little
 	wait1Msec(250);
 	setPincerPower(-127); //grab cube again
 	wait1Msec(500);
@@ -236,14 +236,14 @@ void runCompAuton(string side, int autonNum)
 {
 	if(side != "right" && side != "left") return;
 
-	driveForDistance(500);
+	driveStraight(500);
 	for(int i = 0; i < 1000; i++)
 	{
 		pincerToPos(1900); //claw to 90
 		wait1Msec(1);
 	}
 	setPincerPower(0);
-	driveForDistance(365); //drive to fence
+	driveStraight(365); //drive to fence
 
 	for(int i = 0; i < 750; i++)
 	{
@@ -270,7 +270,7 @@ void runCompAuton(string side, int autonNum)
 		wait1Msec(500);
 
 		liftToPos(3200);
-		driveForDistance(900); //parallel to fence
+		driveStraight(900); //parallel to fence
 
 		if(side == "left")
 			turnClockwise(125); //turn to face cube
@@ -279,10 +279,10 @@ void runCompAuton(string side, int autonNum)
 
 		wait1Msec(750);
 		setLiftPower(0);
-		driveForDistance(250); //forward to snag cube
+		driveStraight(250); //forward to snag cube
 		setPincerPower(-127); //maybe works, hopefully holds pincer shut
 		wait1Msec(2000);
-		driveForDistance(-300); //back to fence
+		driveStraight(-300); //back to fence
 		setLiftPower(127);
 
 		//CHANGED during competition
@@ -301,7 +301,7 @@ void runCompAuton(string side, int autonNum)
 			wait1Msec(1);
 		}
 		//starts to drive back
-		driveForDistance(100);
+		driveStraight(100);
 
 	} //end of section included for auton "1"
 
