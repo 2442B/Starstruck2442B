@@ -289,7 +289,7 @@ void launch()
 	setLiftPower(0);
 
 }
-
+/*
 void runProgSkills(string side)
 {
 
@@ -415,7 +415,8 @@ void runProgSkills(string side)
 	launch();
 }
 
-void runCompAuton(string side, int auto//nNum)
+
+void runCompAuton(string side, int autonNum)
 {
 	if(side != "right" && side != "left") return;
 
@@ -510,7 +511,7 @@ void runCompAuton(string side, int auto//nNum)
 	//Clean
 	setLeftDrivePower(0);
 	setRightDrivePower(0);
-}
+} */
 
 task usercontrol()
 {
