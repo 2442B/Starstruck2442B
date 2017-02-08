@@ -13,18 +13,15 @@
 #pragma config(Motor,  port8,           liftLeftExtremes, tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port9,           liftLeftMid,   tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port10,          leftPincer,    tmotorVex393_HBridge, openLoop, reversed)
-#pragma config(UART_Usage, UART2, uartVEXLCD, baudRate19200, IOPins, None, None)
 
 #define BCI_USE_TIMER
-#define BCI_USE_PID_OPT
 #define BCI_USE_POS_PID
-#define BCI_USE_MOTORCONTROL
 
 #include "..\BCI\BCI.h"
+#include "..\Starstruck2442B\drivingFunctions.c"
+#include "..\Starstruck2442B\turningFunctions.c"
 
 #pragma systemFile
-
-int lcdButton2;
 
 void setLiftPower(int power)
 {
@@ -42,187 +39,6 @@ void liftToPos(int angle)
 	if(abs(power) >= 5)
 		setLiftPower(power);
 }
-
-//holdLiftPos() deprecated - removed
-
-void setLeftDrivePower(int power)
-{
-	addMotor(driveLeftFront);
-	addMotor(driveLeftBack);
-	startTask(motorSlewRateTask);
-	setMotorSpeed(driveLeftFront, power);
-	setMotorSpeed(driveLeftBack, power);
-}
-void setRightDrivePower(int power)
-{
-	addMotor(driveRightFront);
-	addMotor(driveRightBack);
-	startTask(motorSlewRateTask);
-	setMotorSpeed(driveRightFront, power);
-	setMotorSpeed(driveRightBack, power);
-}
-
-void driveForTime(int time, int power)
-{
-	setLeftDrivePower(power);
-	setRightDrivePower(power);
-	wait1Msec(time);
-
-	setLeftDrivePower(0);
-	setRightDrivePower(0);
-}
-
-bool PID_Opt_DriveStraight(const int distance, tMotor *leftMotors, tMotor *rightMotors, const unsigned int numMotors, const tSensors leftSensor, const tSensors rightSensor, pos_PID *distancePID, pos_PID *anglePID)
-{
-	//Save left and right quad values instead of setting them to zero
-	const float encoderLeft = SensorValue[leftSensor], encoderRight = SensorValue[rightSensor];
-
-	//Total distance elapsed since start and total angle change since start
-	float distanceElapsed = 0, angleChange = 0;
-	pos_PID_ChangeSensor(distancePID, &distanceElapsed);
-	pos_PID_ChangeSensor(anglePID, &angleChange);
-
-	//Target distance for the distance PID controller
-	//Angle PID controller's target is 0
-	const int targetDistance = distance;
-	pos_PID_SetTargetPosition(distancePID, targetDistance);
-	pos_PID_SetTargetPosition(anglePID, 0);
-
-	//If distance PID controller is at target
-	bool atTarget = false;
-
-	//Distance that is "close enough" to target
-	const int atTargetDistance = 5;
-
-	//Timer for being at target
-	timer atTargetTimer;
-	timer_Initialize(&atTargetTimer);
-
-	//Timeout period (ms)
-	const int timeoutPeriod = 250;
-
-	//Current left and right quad displacements
-	float currentLeft, currentRight;
-
-	//Distance and angle PID output
-	int distOutput, angleOutput;
-
-	//Loop index
-	unsigned int i = 0;
-
-	while (!atTarget)
-	{
-		//Calculate distance displacement
-		currentLeft = SensorValue[leftSensor] - encoderLeft;
-		currentRight = SensorValue[rightSensor] - encoderRight;
-
-		//Overall displacement is the average of left and right displacements
-		distanceElapsed = (currentLeft + currentRight) / 2.0;
-
-		//Angle change doesn't need to be a real angle, just the difference in displacements
-		angleChange = currentRight - currentLeft;
-
-		//Get output from both PID's
-		distOutput = pos_PID_StepController(distancePID);
-		angleOutput = pos_PID_StepController(anglePID);
-
-		//Set motors to distance PID output with correction from angle PID
-		for (i = 0; i < numMotors; i++)
-		{
-			writeDebugStreamLine("distOutput: %i", distOutput);
-			//writeDebugStreamLine("angleOutput: %i", angleOutput);
-			motor[*(leftMotors + i)] = distOutput + angleOutput;
-			motor[*(rightMotors + i)] = distOutput - angleOutput;
-		}
-
-		//Place mark if we're close enough to the target distance
-		if (fabs(targetDistance - distanceElapsed) <= atTargetDistance)
-		{
-			timer_PlaceHardMarker(&atTargetTimer);
-		}
-		else
-		{
-			timer_ClearHardMarker(&atTargetTimer);
-		}
-
-		//If we've been close enough for long enough, we're there
-		if (timer_GetDTFromHardMarker(&atTargetTimer) >= timeoutPeriod)
-		{
-			atTarget = true;
-		}
-	}
-
-	for (i = 0; i < numMotors; i++)
-	{
-		motor[*(leftMotors + i)] = 0;
-		motor[*(rightMotors + i)] = 0;
-	}
-
-	return true;
-}
-
-void driveForDistance(int distance)
-{
-	tMotor leftMotors[2] = {driveLeftFront, driveLeftBack};
-	tMotor rightMotors[2] = {driveRightFront, driveRightBack};
-
-	pos_PID distancePID, anglePID;
-	pos_PID_InitController(&distancePID, NULL, 0.4, 0.5, 0.5); //NEED NUMBERS
- 	pos_PID_InitController(&anglePID, NULL, 0, 0, 0); //NEED NUMBERS
-
-
-	PID_Opt_DriveStraight(distance, leftMotors, rightMotors, 2, leftEncoder, rightEncoder, &distancePID, &anglePID); //TEST FOR NEGATIVE NUMS
-
-}
-
-void turnCounterClockwise(int angle)
-{
-	float conv_angle = angle * (2); //NEED NUMS
-
-	pos_PID leftPID;
-	pos_PID rightPID;
-
-	pos_PID_InitController(&leftPID, leftEncoder, 1, 2, 3); //NEED VALUES
-	pos_PID_InitController(&rightPID, rightEncoder, 1, 2, 3); //NEED VALUES
-
-	pos_PID_SetTargetPosition(&leftPID, -conv_angle);
-	pos_PID_SetTargetPosition(&rightPID, conv_angle);
-
-	int leftPower, rightPower;
-	do
-	{
-		leftPower = pos_PID_StepController(&leftPID);
-		rightPower = pos_PID_StepController(&rightPID);
-		setLeftDrivePower(leftPower);
-		setRightDrivePower(rightPower);
-	} while(abs(leftPower) <= 5 && abs(rightPower) <= 5);
-}
-
-void turnClockwise(int angle)
-{
-	float conv_angle = angle * (2); //NEED NUMS
-
-	pos_PID leftPID;
-	pos_PID rightPID;
-
-	pos_PID_InitController(&leftPID, leftEncoder, 1, 2, 3); //NEED VALUES
-	pos_PID_InitController(&rightPID, rightEncoder, 1, 2, 3); //NEED VALUES
-
-	pos_PID_SetTargetPosition(&leftPID, conv_angle);
-	pos_PID_SetTargetPosition(&rightPID, -conv_angle);
-
-	int leftPower;
-	int rightPower;
-	do
-	{
-		leftPower = pos_PID_StepController(&leftPID);
-		rightPower = pos_PID_StepController(&rightPID);
-		setLeftDrivePower(leftPower);
-		setRightDrivePower(rightPower);
-	} while(abs(leftPower) <= 5 && abs(rightPower) <= 5);
-}
-
-
 
 /*
 ______   __                               ______                   __                 ______     __                           __                    __    __
