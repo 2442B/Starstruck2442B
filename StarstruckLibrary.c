@@ -117,20 +117,20 @@ void driveBackForDistance(int numClicks, int power, int stopPower = 6)
 			setLeftDrivePower(0); //left side 50 or more clicks ahead, may need to be changed
 		else if(rightEn <= leftEn - bufferZone)
 			setRightDrivePower(0); //may need to be changed
-		/*if(leftEn >= rightEn + bufferZone) //left side 50 or more clicks ahead
+		if(leftEn >= rightEn + bufferZone) //left side 50 or more clicks ahead
 		{
-		if(power - (bufferZone - 5) <= 0)
-		setLeftDrivePower(0);
-		else
-		setLeftDrivePower(power - (bufferZone - 5)); //may need to be changed
+			if(power - (bufferZone - 5) <= 0)
+				setLeftDrivePower(0);
+			else
+				setLeftDrivePower(power - (45)); //may need to be changed
 		}
 		else if(rightEn >= leftEn + bufferZone)
 		{
-		if(power - (bufferZone - 5) <= 0)
-		setRightDrivePower(0);
-		else
-		setRightDrivePower(power - (bufferZone - 5)); //may need to be changed
-		}*/
+			if(power - (bufferZone - 5) <= 0)
+				setRightDrivePower(0);
+			else
+				setRightDrivePower(power - (45)); //may need to be changed
+		}
 
 
 		if(rightEn <= numClicks)
@@ -200,15 +200,15 @@ void turnCounterClockwise(int angle)
 
 
 /*
- ______   __                               ______                   __                 ______     __                           __                    __    __
+______   __                               ______                   __                 ______     __                           __                    __    __
 /      \ |  \                             /      \                 |  \               /      \   |  \                         |  \                  |  \  |  \
 |  $$$$$$\| $$  ______   __   __   __     |  $$$$$$\  ______    ____| $$  ______      |  $$$$$$\ _| $$_     ______    ______  _| $$_     _______     | $$  | $$  ______    ______    ______
 | $$   \$$| $$ |      \ |  \ |  \ |  \    | $$   \$$ /      \  /      $$ /      \     | $$___\$$|   $$ \   |      \  /      \|   $$ \   /       \    | $$__| $$ /      \  /      \  /      \
 | $$      | $$  \$$$$$$\| $$ | $$ | $$    | $$      |  $$$$$$\|  $$$$$$$|  $$$$$$\     \$$    \  \$$$$$$    \$$$$$$\|  $$$$$$\\$$$$$$  |  $$$$$$$    | $$    $$|  $$$$$$\|  $$$$$$\|  $$$$$$\
 | $$   __ | $$ /      $$| $$ | $$ | $$    | $$   __ | $$  | $$| $$  | $$| $$    $$     _\$$$$$$\  | $$ __  /      $$| $$   \$$ | $$ __  \$$    \     | $$$$$$$$| $$    $$| $$   \$$| $$    $$
 | $$__/  \| $$|  $$$$$$$| $$_/ $$_/ $$    | $$__/  \| $$__/ $$| $$__| $$| $$$$$$$$    |  \__| $$  | $$|  \|  $$$$$$$| $$       | $$|  \ _\$$$$$$\    | $$  | $$| $$$$$$$$| $$      | $$$$$$$$
- \$$    $$| $$ \$$    $$ \$$   $$   $$     \$$    $$ \$$    $$ \$$    $$ \$$     \     \$$    $$   \$$  $$ \$$    $$| $$        \$$  $$|       $$    | $$  | $$ \$$     \| $$       \$$     \
-  \$$$$$$  \$$  \$$$$$$$  \$$$$$\$$$$       \$$$$$$   \$$$$$$   \$$$$$$$  \$$$$$$$      \$$$$$$     \$$$$   \$$$$$$$ \$$         \$$$$  \$$$$$$$      \$$   \$$  \$$$$$$$ \$$        \$$$$$$$
+\$$    $$| $$ \$$    $$ \$$   $$   $$     \$$    $$ \$$    $$ \$$    $$ \$$     \     \$$    $$   \$$  $$ \$$    $$| $$        \$$  $$|       $$    | $$  | $$ \$$     \| $$       \$$     \
+\$$$$$$  \$$  \$$$$$$$  \$$$$$\$$$$       \$$$$$$   \$$$$$$   \$$$$$$$  \$$$$$$$      \$$$$$$     \$$$$   \$$$$$$$ \$$         \$$$$  \$$$$$$$      \$$   \$$  \$$$$$$$ \$$        \$$$$$$$
 */
 
 
@@ -270,8 +270,6 @@ void runProgSkills(string side)
 	//phase I : preloads
 	//claw starts on sides
 	driveBackForDistance(-300, -127, 6);
-	//program edit - NEEDS TESTING
-	//driveForDistance(100, 127, -6); //drives back
 	wait1Msec(500);
 	setPincerPower(-127); //hopefully grabs star + fallen preload
 	wait1Msec(1000);
@@ -295,14 +293,14 @@ void runProgSkills(string side)
 	//phase II : get cube in the middle and launch
 
 	//drive to line up with middle
-	/*
+
 	driveForDistance(550, 127, -6);
 	wait1Msec(250);
 	//turn
 	if(side == "right")
-	turnClockwise(90);
+		turnClockwise(90);
 	else if(side == "left")
-	turnCounterClockwise(90);
+		turnCounterClockwise(90);
 	wait1Msec(250);
 	driveForDistance(400, 127, -6); //moves down center toward cube
 	wait1Msec(750);
@@ -314,9 +312,9 @@ void runProgSkills(string side)
 	wait1Msec(750); //longer wait time - turning with a cube
 	//turn
 	if(side == "right")
-	turnCounterClockwise(140);
+		turnCounterClockwise(140);
 	else if(side == "left")
-	turnClockwise(140);
+		turnClockwise(140);
 	wait1Msec(250);
 	//drives toward fence and launches
 	driveBackForDistance(-450, -127,  -6);
@@ -332,22 +330,22 @@ void runProgSkills(string side)
 	//sets pincers to be on sides of robot
 	for(int i = 0; i < 1500; i++)
 	{
-	pincerToPos(3200);
-	wait1Msec(1);
+		pincerToPos(3200);
+		wait1Msec(1);
 	}
 	//move away from fence a little bit
 	driveForDistance(250, 127, -6);
 	wait1Msec(250);
 	//turn
 	if(side == "right")
-	turnClockwise(115);
+		turnClockwise(115);
 	else if(side == "left")
-	turnCounterClockwise(115);
+		turnCounterClockwise(115);
 	wait1Msec(250);
 	for(int i = 0; i < 1000; i++)
 	{
-	pincerToPos(1030);
-	wait1Msec(1);
+		pincerToPos(1030);
+		wait1Msec(1);
 	}
 	driveForDistance(100, 127, -6);
 	wait1Msec(250);
@@ -355,8 +353,8 @@ void runProgSkills(string side)
 	wait1Msec(250);
 	for(int i = 0; i < 1000; i++) //open claw again
 	{
-	pincerToPos(1030);
-	wait1Msec(1);
+		pincerToPos(1030);
+		wait1Msec(1);
 	}
 	driveForDistance(50, 127, -6); //move forward a little
 	wait1Msec(250);
@@ -364,47 +362,13 @@ void runProgSkills(string side)
 	wait1Msec(500);
 	//turn - may need to change
 	if(side == "right")
-	turnCounterClockwise(115);
+		turnCounterClockwise(115);
 	else if(side == "left")
-	turnClockwise(115);
+		turnClockwise(115);
 	wait1Msec(250);
 	driveBackForDistance(-250, -127, 6); //may need changing
-	launch(); */
+	launch();
 }
-
-/*
-auton ideas:
-- two seperate autons
-- one independent
-- one (or more?) to work alongside 2442A, 2442C
-- getting stars on the field [ideas below]
-- 3 stars in the back?
-- stars in the corners
-*other teams don't do this*
-- move toward stars on the fence holding claw up (possible application of tasks
--
-*/
-//sides - auton
-//format: side; results
-//for 2, 4 - see markers in code
-//qualifying
-//1: right; got cube, not stars
-//2: [REDOWNLOAD] right* - comment out for 2442C; got stars [cube: N/A]
-//3: right; got stars, not cube
-//4: right; got stars, not cube
-//Think* we have fixed it
-//5: right; got cube, not stars
-//6: [REDOWNLOAD] left* - comment out for 2442A; got stars [cube: N/A]
-//Skills break
-//7: [REDOWNLOAD] left* - comment out for 1615A; missed stars [cube: N/A]
-//8: [REDOWNLOAD] right;
-//quarterfinals
-//1: right; got stars
-//semifinals
-//1: right; got stars - lost auton
-//finals
-//1: don't remember
-
 
 void runCompAuton(string side, int autonNum)
 {
