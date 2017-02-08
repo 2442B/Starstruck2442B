@@ -370,7 +370,12 @@ void runProgSkills(string side)
 	launch();
 }
 
-void runCompAuton(string side, int autonNum)
+/**
+ * drives to knock stars but also tries to grab the cube in the middle and throw it over.
+ * @param side, a String that specifies the side that the robot is starting on.
+ */
+
+void runMainCompAuton(string side)
 {
 	if(side != "right" && side != "left") return;
 
@@ -397,61 +402,45 @@ void runCompAuton(string side, int autonNum)
 		pincerToPos(3200);
 		wait1Msec(1);
 	} //close claw to get out of way
+	if(side == "left")
+		turnClockwise(100); //90 deg, but kinda guess and check - turn right
+	else if(side == "right")
+		turnCounterClockwise(100); //turn left
+	wait1Msec(500);
 
+	liftToPos(3200);
+	driveForDistance(900, 127, -20); //parallel to fence
 
-	if(autonNum == 1) //main auton - will only run if running auton "1"
+	if(side == "left")
+		turnClockwise(125); //turn to face cube
+	else if(side == "right")
+		turnCounterClockwise(125); //turn to face cube
+
+	wait1Msec(750);
+	setLiftPower(0);
+	driveForDistance(250, 127, -10); //forward to snag cube
+	setPincerPower(-127); //maybe works, hopefully holds pincer shut
+	wait1Msec(2000);
+	driveBackForDistance(-300, -127, 10); //back to fence
+	setLiftPower(127);
+
+	//CHANGED during competition
+	wait1Msec(1500);
+	setLiftPower(0);
+
+	for(int i = 0; i < 1000; i++)
 	{
-		if(side == "left")
-			turnClockwise(100); //90 deg, but kinda guess and check - turn right
-		else if(side == "right")
-			turnCounterClockwise(100); //turn left
-		wait1Msec(500);
-
-		liftToPos(3200);
-		driveForDistance(900, 127, -20); //parallel to fence
-
-		if(side == "left")
-			turnClockwise(125); //turn to face cube
-		else if(side == "right")
-			turnCounterClockwise(125); //turn to face cube
-
-		wait1Msec(750);
-		setLiftPower(0);
-		driveForDistance(250, 127, -10); //forward to snag cube
-		setPincerPower(-127); //maybe works, hopefully holds pincer shut
-		wait1Msec(2000);
-		driveBackForDistance(-300, -127, 10); //back to fence
-		setLiftPower(127);
-
-		//CHANGED during competition
-		wait1Msec(1500);
-		setLiftPower(0);
-
-		for(int i = 0; i < 1000; i++)
-		{
-			pincerToPos(1030); //open pincer (should drop cube)
-			wait1Msec(1);
-		}
-		wait1Msec(250);
-		for(int i = 0; i < 250; i++)
-		{
-			pincerToPos(0);
-			wait1Msec(1);
-		}
-		//starts to drive back
-		driveForDistance(100, 127, -6);
-
-	} //end of section included for auton "1"
-
-	else if(autonNum == 2) //will only run if running auton "2"
+		pincerToPos(1030); //open pincer (should drop cube)
+		wait1Msec(1);
+	}
+	wait1Msec(250);
+	for(int i = 0; i < 250; i++)
 	{
-		//spin 180 to prepare for driver control only when commenting out the following code is commented,
-		if(side == "right")
-			turnCounterClockwise(180);
-		else if(side == "left")
-			turnClockwise(180);
-	} //end of section included for auton "2"
-
+		pincerToPos(0);
+		wait1Msec(1);
+	}
+	//starts to drive back
+	driveForDistance(100, 127, -6);
 	//lowers lift
 	for(int i = 0; i < 750; i++)
 	{
@@ -466,6 +455,59 @@ void runCompAuton(string side, int autonNum)
 	setLeftDrivePower(0);
 	setRightDrivePower(0);
 }
+
+/**
+ * drives up the fence and knocks off the stars, then turns 180 degrees to prepare for driver control.
+ * @param side, a String that specifies the side that the robot is starting on.
+ */
+
+void runBasicCompAuton(string side)
+{
+if(side != "right" && side != "left") return;
+
+	driveForDistance(500, 127, -6);
+	for(int i = 0; i < 1000; i++)
+	{
+		pincerToPos(1900); //claw to 90
+		wait1Msec(1);
+	}
+	setPincerPower(0);
+	driveForDistance(365, 127, -6); //drive to fence
+
+	for(int i = 0; i < 750; i++)
+	{
+		liftToPos(1900); //lift up to knock  -- NEEDS NEW VALUES
+		wait1Msec(1);
+	}
+	setLiftPower(0); //relax lift motors
+	wait1Msec(1000);
+
+	//puts pincers against sides
+	for(int i = 0; i < 1000; i++)
+	{
+		pincerToPos(3200);
+		wait1Msec(1);
+	} //close claw to get out of way
+//spin 180 to prepare for driver control only when commenting out the following code is commented,
+		if(side == "right")
+			turnCounterClockwise(180);
+		else if(side == "left")
+			turnClockwise(180);
+//lowers lift
+	for(int i = 0; i < 750; i++)
+	{
+		liftToPos(3200);
+		wait1Msec(1);
+	}
+
+	setLiftPower(0); //stops lift motors
+	setPincerPower(0); //stops lift motors
+
+	//Clean
+	setLeftDrivePower(0);
+	setRightDrivePower(0);
+}
+
 
 task usercontrol()
 {
