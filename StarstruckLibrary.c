@@ -371,9 +371,10 @@ void runProgSkills(string side)
 }
 
 /**
- * drives to knock stars but also tries to grab the cube in the middle and throw it over.
- * @param side, a String that specifies the side that the robot is starting on.
- */
+* drives to knock stars but also tries to grab the cube in the middle and throw it over.
+* (added) move back and grab 3 stars in middle back after launching cube to launch.
+* @param side, a String that specifies the side that the robot is starting on.
+*/
 
 void runMainCompAuton(string side)
 {
@@ -420,7 +421,7 @@ void runMainCompAuton(string side)
 	setLiftPower(0);
 	driveForDistance(250, 127, -10); //forward to snag cube
 	setPincerPower(-127); //maybe works, hopefully holds pincer shut
-	wait1Msec(2000);
+	wait1Msec(2000); //POSSIBLE FIX: this is a long wait time
 	driveBackForDistance(-300, -127, 10); //back to fence
 	setLiftPower(127);
 
@@ -439,14 +440,40 @@ void runMainCompAuton(string side)
 		pincerToPos(0);
 		wait1Msec(1);
 	}
+
 	//starts to drive back
 	driveForDistance(100, 127, -6);
+
 	//lowers lift
 	for(int i = 0; i < 750; i++)
 	{
 		liftToPos(3200);
 		wait1Msec(1);
 	}
+
+	//based on result of last launch, may not be lined up..
+	driveForDistance(900, 127, -6); //drive back to stars
+
+	wait1Msec(250);
+	setPincerPower(-127); //grab cubes and hopefully can hold on to 3 (probably not)
+	wait1Msec(250);
+
+	driveBackForDistance(-900, -127, 6); //drive back to fence
+
+	launch();
+
+	//lowers lift
+	for(int i = 0; i < 750; i++)
+	{
+		liftToPos(3200);
+		wait1Msec(1);
+	}
+
+	//spin 180 to prepare for driver control only when commenting out the following code is commented,
+	if(side == "right")
+		turnCounterClockwise(180);
+	else if(side == "left")
+		turnClockwise(180);
 
 	setLiftPower(0); //stops lift motors
 	setPincerPower(0); //stops lift motors
@@ -457,13 +484,14 @@ void runMainCompAuton(string side)
 }
 
 /**
- * drives up the fence and knocks off the stars, then turns 180 degrees to prepare for driver control.
- * @param side, a String that specifies the side that the robot is starting on.
- */
+* drives up the fence and knocks off the stars, then turns 180 degrees to prepare for driver control.
+* (added) move to get star in corner to launch
+* @param side, a String that specifies the side that the robot is starting on.
+*/
 
 void runBasicCompAuton(string side)
 {
-if(side != "right" && side != "left") return;
+	if(side != "right" && side != "left") return;
 
 	driveForDistance(500, 127, -6);
 	for(int i = 0; i < 1000; i++)
@@ -488,17 +516,49 @@ if(side != "right" && side != "left") return;
 		pincerToPos(3200);
 		wait1Msec(1);
 	} //close claw to get out of way
-//spin 180 to prepare for driver control only when commenting out the following code is commented,
-		if(side == "right")
-			turnCounterClockwise(180);
-		else if(side == "left")
-			turnClockwise(180);
-//lowers lift
+
+	//lowers lift
 	for(int i = 0; i < 750; i++)
 	{
 		liftToPos(3200);
 		wait1Msec(1);
 	}
+	//turns to align with star
+	//15 most likely will have to change
+	if(side == "right")
+		turnCounterClockwise(15);
+	else if(side == "left")
+		turnClockwise(15);
+	wait1Msec(750);
+
+	driveForDistance(700, 127, -6); //drive back to star in corner -> may need to change
+	wait1Msec(250);
+	setPincerPower(-127); //grab cube to drag
+	wait1Msec(250);
+	driveBackForDistance(-700, -127, 6); //drive back to fence
+	wait1Msec(250);
+
+	//turn to realign with fence - is this really necessary?
+	if(side == "right")
+		turnClockwise(15);
+	else if(side == "left")
+		turnCounterClockwise(15);
+	wait1Msec(750);
+
+	launch();
+
+	//lowers lift
+	for(int i = 0; i < 750; i++)
+	{
+		liftToPos(3200);
+		wait1Msec(1);
+	}
+
+	//spin 180 to prepare for driver control only when commenting out the following code is commented,
+	if(side == "right")
+		turnCounterClockwise(180);
+	else if(side == "left")
+		turnClockwise(180);
 
 	setLiftPower(0); //stops lift motors
 	setPincerPower(0); //stops lift motors
