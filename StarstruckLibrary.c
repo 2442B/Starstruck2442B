@@ -330,7 +330,7 @@ void runProgSkills(string side)
 	//sets pincers to be on sides of robot
 	for(int i = 0; i < 1500; i++)
 	{
-		pincerToPos(3200);
+		pincerToPos(3100);
 		wait1Msec(1);
 	}
 	//move away from fence a little bit
@@ -400,7 +400,7 @@ void runMainCompAuton(string side)
 	//puts pincers against sides
 	for(int i = 0; i < 1000; i++)
 	{
-		pincerToPos(3200);
+		pincerToPos(3100);
 		wait1Msec(1);
 	} //close claw to get out of way
 	if(side == "left")
@@ -513,7 +513,7 @@ void runBasicCompAuton(string side)
 	//puts pincers against sides
 	for(int i = 0; i < 1000; i++)
 	{
-		pincerToPos(3200);
+		pincerToPos(3100);
 		wait1Msec(1);
 	} //close claw to get out of way
 
@@ -523,18 +523,19 @@ void runBasicCompAuton(string side)
 		liftToPos(3200);
 		wait1Msec(1);
 	}
+
 	//turns to align with star
-	//15 most likely will have to change
 	if(side == "right")
-		turnCounterClockwise(15);
+		turnCounterClockwise(190);
 	else if(side == "left")
-		turnClockwise(15);
+		turnClockwise(190);
+
 	wait1Msec(750);
 
 	driveForDistance(700, 127, -6); //drive back to star in corner -> may need to change
-	wait1Msec(250);
-	setPincerPower(-127); //grab cube to drag
-	wait1Msec(250);
+	wait1Msec(500);
+	setPincerPower(-127); //grab star to drag
+	wait1Msec(500);
 	driveBackForDistance(-700, -127, 6); //drive back to fence
 	wait1Msec(250);
 
@@ -554,11 +555,7 @@ void runBasicCompAuton(string side)
 		wait1Msec(1);
 	}
 
-	//spin 180 to prepare for driver control only when commenting out the following code is commented,
-	if(side == "right")
-		turnCounterClockwise(180);
-	else if(side == "left")
-		turnClockwise(180);
+	//already turned for driver control
 
 	setLiftPower(0); //stops lift motors
 	setPincerPower(0); //stops lift motors
@@ -626,7 +623,7 @@ task usercontrol()
 		else if(leftTriggerUp == 1)
 			pincerToPos(1030);
 		else if(btnSevenUp == 1)
-			pincerToPos(3200);
+			pincerToPos(3100);
 		else if(btnSevenD == 1)
 			pincerToPos(1500);
 		else
