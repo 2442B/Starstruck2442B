@@ -264,6 +264,14 @@ void launch()
 
 }
 
+/** Programming Skills - broken into 4 "phases"
+	 * launches 4 preloads.. order: 2 stars, cube, 2 stars, cube
+	 * gets middle cube, launches
+	 * gets far cube, launches
+	 * spins after launching cube and launches star in corner near fence
+	 * @param side, a String that specifies the side the robot starts on
+	 */
+
 void runProgSkills(string side)
 {
 
@@ -380,18 +388,18 @@ void runMainCompAuton(string side)
 {
 	if(side != "right" && side != "left") return;
 
-	driveForDistance(500, 127, -6);
+	driveForDistance(450, 127, -6);
 	for(int i = 0; i < 1000; i++)
 	{
 		pincerToPos(1900); //claw to 90
 		wait1Msec(1);
 	}
 	setPincerPower(0);
-	driveForDistance(365, 127, -6); //drive to fence
+	driveForDistance(430, 127, -6); //drive to fence
 
 	for(int i = 0; i < 750; i++)
 	{
-		liftToPos(1900); //lift up to knock  -- NEEDS NEW VALUES
+		liftToPos(2500); //lift up to knock  -- NEEDS NEW VALUES
 		wait1Msec(1);
 	}
 	setLiftPower(0); //relax lift motors
@@ -404,25 +412,37 @@ void runMainCompAuton(string side)
 		wait1Msec(1);
 	} //close claw to get out of way
 	if(side == "left")
-		turnClockwise(100); //90 deg, but kinda guess and check - turn right
+		turnClockwise(80); //90 deg, but kinda guess and check - turn right
 	else if(side == "right")
-		turnCounterClockwise(100); //turn left
+		turnCounterClockwise(80); //turn left
 	wait1Msec(500);
 
 	liftToPos(3200);
-	driveForDistance(900, 127, -20); //parallel to fence
+	wait1Msec(500);
 
+	driveForDistance(350, 127, -20); //parallel to fence
+/*
 	if(side == "left")
-		turnClockwise(125); //turn to face cube
+		turnClockwise(105); //turn to face cube
 	else if(side == "right")
-		turnCounterClockwise(125); //turn to face cube
+		turnCounterClockwise(105); //turn to face cube
+		*/
 
 	wait1Msec(750);
 	setLiftPower(0);
-	driveForDistance(250, 127, -10); //forward to snag cube
+	driveForDistance(100, 127, -10); //forward to snag cube
 	setPincerPower(-127); //maybe works, hopefully holds pincer shut
 	wait1Msec(2000); //POSSIBLE FIX: this is a long wait time
+
+	if(side == "right")
+		turnCounterClockwise(105);
+	else if(side == "left")
+		turnClockwise(105);
+
 	driveBackForDistance(-300, -127, 10); //back to fence
+	launch();
+
+	/*
 	setLiftPower(127);
 
 	//CHANGED during competition
@@ -440,6 +460,7 @@ void runMainCompAuton(string side)
 		pincerToPos(0);
 		wait1Msec(1);
 	}
+	*/
 
 	//starts to drive back
 	driveForDistance(100, 127, -6);
@@ -526,13 +547,13 @@ void runBasicCompAuton(string side)
 
 	//turns to align with star
 	if(side == "right")
-		turnCounterClockwise(190);
+		turnCounterClockwise(230);
 	else if(side == "left")
-		turnClockwise(190);
+		turnClockwise(230);
 
 	wait1Msec(750);
 
-	driveForDistance(700, 127, -6); //drive back to star in corner -> may need to change
+	driveForDistance(500, 127, -6); //drive back to star in corner -> may need to change
 	wait1Msec(500);
 	setPincerPower(-127); //grab star to drag
 	wait1Msec(500);
