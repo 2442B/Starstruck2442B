@@ -386,12 +386,14 @@ void runProgSkills(string side)
 
 void runMainCompAuton(string side)
 {
-	if(side != "right" && side != "left") return;
+	if(side != "right" && side != "left")
+		return;
 
-	driveForDistance(450, 127, -6);
-	for(int i = 0; i < 1000; i++)
+	driveForDistance(450, 127, -6); //drive forward
+
+	for(int i = 0; i < 1000; i++) //claw to 90
 	{
-		pincerToPos(1900); //claw to 90
+		pincerToPos(1900);
 		wait1Msec(1);
 	}
 	setPincerPower(0);
@@ -402,6 +404,7 @@ void runMainCompAuton(string side)
 		liftToPos(2500); //lift up to knock  -- NEEDS NEW VALUES
 		wait1Msec(1);
 	}
+
 	setLiftPower(0); //relax lift motors
 	wait1Msec(1000);
 
@@ -410,29 +413,28 @@ void runMainCompAuton(string side)
 	{
 		pincerToPos(3100);
 		wait1Msec(1);
-	} //close claw to get out of way
+	}
+
 	if(side == "left")
-		turnClockwise(80); //90 deg, but kinda guess and check - turn right
+		turnClockwise(80); //GUESS AND CHECK
 	else if(side == "right")
-		turnCounterClockwise(80); //turn left
-	wait1Msec(500);
+		turnCounterClockwise(80);
 
 	liftToPos(3200);
 	wait1Msec(500);
 
-	driveForDistance(350, 127, -20); //parallel to fence
-/*
+	driveForDistance(350, 127, -20); //drive along parallel to fence
+
 	if(side == "left")
 		turnClockwise(105); //turn to face cube
 	else if(side == "right")
 		turnCounterClockwise(105); //turn to face cube
-		*/
 
 	wait1Msec(750);
 	setLiftPower(0);
 	driveForDistance(100, 127, -10); //forward to snag cube
 	setPincerPower(-127); //maybe works, hopefully holds pincer shut
-	wait1Msec(2000); //POSSIBLE FIX: this is a long wait time
+	wait1Msec(2000); //LONG WAIT TIME
 
 	if(side == "right")
 		turnCounterClockwise(105);
@@ -440,7 +442,7 @@ void runMainCompAuton(string side)
 		turnClockwise(105);
 
 	driveBackForDistance(-300, -127, 10); //back to fence
-	launch();
+	launch(); //should replace the following
 
 	/*
 	setLiftPower(127);
@@ -473,22 +475,14 @@ void runMainCompAuton(string side)
 	}
 
 	//based on result of last launch, may not be lined up..
-	driveForDistance(900, 127, -6); //drive back to stars
+	driveForDistance(900, 127, -6); //GUESS AND CHECK -> drive back to stars
 
 	wait1Msec(250);
-	setPincerPower(-127); //grab cubes and hopefully can hold on to 3 (probably not)
+	setPincerPower(-127); //grab stars and hopefully can hold on to 3 (probably not)
 	wait1Msec(250);
 
-	driveBackForDistance(-900, -127, 6); //drive back to fence
-
+	driveBackForDistance(-900, -127, 6); //GUESS AND CHECK -> drive back to fence
 	launch();
-
-	//lowers lift
-	for(int i = 0; i < 750; i++)
-	{
-		liftToPos(3200);
-		wait1Msec(1);
-	}
 
 	//spin 180 to prepare for driver control only when commenting out the following code is commented,
 	if(side == "right")
@@ -551,8 +545,6 @@ void runBasicCompAuton(string side)
 	else if(side == "left")
 		turnClockwise(230);
 
-	wait1Msec(750);
-
 	driveForDistance(500, 127, -6); //drive back to star in corner -> may need to change
 	wait1Msec(500);
 	setPincerPower(-127); //grab star to drag
@@ -565,7 +557,6 @@ void runBasicCompAuton(string side)
 		turnClockwise(15);
 	else if(side == "left")
 		turnCounterClockwise(15);
-	wait1Msec(750);
 
 	launch();
 
