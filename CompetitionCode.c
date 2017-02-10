@@ -35,7 +35,10 @@ void pre_auton()
 
 task autonomous()
 {
-
+	//Comment out which one we are not going to use
+	string side = "right";
+	runBasicCompAuton(side);
+	runMainCompAuton(side);
 }
 
 task usercontrol()
