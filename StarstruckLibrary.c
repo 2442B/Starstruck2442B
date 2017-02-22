@@ -8,9 +8,9 @@
 #pragma config(Motor,  port2,           liftRightExtremes, tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port3,           liftRightMid,  tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port4,           driveRightFront, tmotorVex393_MC29, openLoop, reversed)
-#pragma config(Motor,  port5,           driveRightBack, tmotorVex393_MC29, openLoop, reversed)
+#pragma config(Motor,  port5,           driveRightBack, tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port6,           driveLeftFront, tmotorVex393_MC29, openLoop)
-#pragma config(Motor,  port7,           driveLeftBack, tmotorVex393_MC29, openLoop)
+#pragma config(Motor,  port7,           driveLeftBack, tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port8,           liftLeftExtremes, tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port9,           liftLeftMid,   tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port10,          leftPincer,    tmotorVex393_HBridge, openLoop, reversed)
@@ -546,6 +546,7 @@ task usercontrol()
 
 task driveMotors()
 {
+	writeDebugStreamLine("started task");
 	while(true)
 	{
 		SensorValue[leftEncoder] = 0;
@@ -584,7 +585,7 @@ task driveMotors()
 			}
 			else if(abs(rightPower) <= 10)
 			{
-				writeDebugStreamLine(" else if check 2 ")
+				writeDebugStreamLine(" else if check 2 ");
 				setRightDrivePower(0);
 			}
 			else
