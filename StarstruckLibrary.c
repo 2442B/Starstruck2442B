@@ -653,7 +653,7 @@ void runNewCompAuton(string side)
 	} */
 
 	setLiftPower(100);
-	wait1Msec(500);
+	//wait1Msec(500);
 
 	if(side == "right")
 		turnCounterClockwise(160);
