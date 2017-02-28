@@ -73,7 +73,6 @@ void driveForDistance(int numClicks, int power, int stopPower = -6)
 				setLeftDrivePower(0);
 			else
 				setLeftDrivePower(power - 45); //may need to be changed
-
 		}
 		else if(rightEn >= leftEn + bufferZone)
 		{
@@ -93,6 +92,7 @@ void driveForDistance(int numClicks, int power, int stopPower = -6)
 	setLeftDrivePower(0);
 	setRightDrivePower(0);
 }
+
 void driveBackForDistance(int numClicks, int power, int stopPower = 6)
 {
 	SensorValue[leftEncoder] = 0;
@@ -291,6 +291,32 @@ void launch()
 	}
 	setLiftPower(0);
 }
+void fastLaunch()
+{
+	int currAngle = SensorValue[liftPoten];
+	while(currAngle > 800) //Lift to drop pos - FIX NUMBER
+	{
+		setLiftPower(127);
+		currAngle = SensorValue[liftPoten];
+		wait1Msec(10);
+	}
+	setLiftPower(-10);
+	wait1Msec(250);
+	setLiftPower(0);
+	for(int i = 0; i < 1100; i++) //Open claw
+	{
+		pincerToPos(1030);
+		wait1Msec(1);
+	}
+	setPincerPower(0);
+	while(currAngle < 3200) //Lift down - FIX NUMBER
+	{
+		setLiftPower(-127);
+		currAngle = SensorValue[liftPoten];
+		wait1Msec(10);
+	}
+	setLiftPower(0);
+}
 
 /** Programming Skills - broken into 4 "phases"
 * phase I: launches 4 preloads.. order: 2 stars, cube, 2 stars, cube
@@ -314,28 +340,28 @@ void runProgSkills(string side)
 
 	setLiftPower(0);
 
-	driveBackForDistance(-900, -127, 6); //drives back to fence
+	driveBackForDistance(-750, -127, 6); //drives back to fence
 
 	launch();
 
 	//CLEAN UP --------------------
-	driveForDistance(900, 127, -6);
+	driveForDistance(750, 127, -6);
 
 	setPincerPower(-127);
 	wait1Msec(1000);
 
-	driveBackForDistance(-900, -127, 6);
+	driveBackForDistance(-750, -127, 6);
 
 	launch();
 
 	//Do for rest of preloads
 	for(int i = 0; i < 2; i++)
 	{
-		driveForDistance(900, 127, -6);
+		driveForDistance(750, 127, -6);
 		setPincerPower(-127);
 		wait1Msec(1000);
 		setPincerPower(-100);
-		driveBackForDistance(-900, -127, 6);
+		driveBackForDistance(-750, -127, 6);
 		setPincerPower(-127);
 		launch();
 	}
@@ -643,57 +669,31 @@ void runNewCompAuton(string side)
 	if(side != "right" && side != "left")
 		return;
 
-
 	driveWithPincerCont(450, 127, 0, 1500);
-	//driveForDistance(450, 127, -6); //moves to snag cube
-
-	//grab cube - long wait time to bring pincers from sides
-	//setPincerPower(-127);
-	//wait1Msec(1500); //MAY NEED TO CHANGE
-	/*
-	for(int i = 0; i < 500; i++)
-	{
-	liftToPos(2000);
-	wait1Msec(1);
-	} */
 
 	setLiftPower(100);
 	//wait1Msec(500);
 
 	if(side == "right")
-		turnCounterClockwise(160);
+		turnCounterClockwise(125);
 	else if(side == "left")
-		turnClockwise(160);
+		turnClockwise(125);
 
 	setLiftPower(127);
 	driveBackForDistance(-400, -127, 6); //holding cube, drag to launch
 
-	//launch();
-	wait1Msec(100);
-	for(int i = 0; i < 500; i++)
-	{
-		liftToPos(3200);
-		wait1Msec(1);
-	}
-	for(int i = 0; i < 1500; i++) //Open claw
-	{
-		pincerToPos(1030);
-		wait1Msec(1);
-	}
-	setLiftPower(0);
-	setPincerPower(0);
+	fastLaunch();
 
 	if(side == "right")
 		turnClockwise(30);
 	else if(side == "left")
 		turnCounterClockwise(30);
 
-	driveForDistance(600, 127, -6);
+	driveForDistance(550, 127, -6);
 	setPincerPower(-127);
 	wait1Msec(500);
-	driveBackForDistance(-675, -127, 6);
+	driveBackForDistance(-650, -127, 6);
 
-	//launch();
 	int currAngle = SensorValue[liftPoten];
 	while(currAngle > 800) //Lift to drop pos - FIX NUMBER
 	{
@@ -704,7 +704,7 @@ void runNewCompAuton(string side)
 	setLiftPower(-10);
 	wait1Msec(250);
 	setLiftPower(0);
-	for(int i = 0; i < 1500; i++) //Open claw
+	for(int i = 0; i < 1100; i++) //Open claw
 	{
 		pincerToPos(1030);
 		wait1Msec(1);
@@ -713,15 +713,6 @@ void runNewCompAuton(string side)
 	setPincerPower(0);
 
 	writeDebugStreamLine("%i", time1[T1]);
-
-	/*
-	while(currAngle < 3200) //Lift down - FIX NUMBER
-	{
-	setLiftPower(-127);
-	currAngle = SensorValue[liftPoten];
-	wait1Msec(10);
-	}
-	setLiftPower(0); */
 }
 
 void runNewBasicCompAuton(string side)
