@@ -227,21 +227,22 @@ void pincerToPos(int angle)
 }
 
 //ONLY USE WHERE NECESSARY - VERY ROUGH
-void driveWithPincerCont(int distance, int power, int angle)
+void driveWithPincerCont(int distance, int power, int angle, int maxTime )
 {
 	SensorValue[leftEncoder] = 0;
 	SensorValue[rightEncoder] = 0;
 	int leftEn = 0;
 	int rightEn = 0;
+	clearTimer(T2);
 
-	while( (leftEn < distance || rightEn < distance) || (abs(SensorValue[leftClawPoten] - angle) > 5 || abs(SensorValue[rightClawPoten] - angle) > 5) )
+	while( leftEn < distance || rightEn < distance || (abs(SensorValue[leftClawPoten] - angle) > 5 || abs(SensorValue[rightClawPoten] - angle) > 5) )
 	{
 		if(leftEn < distance || rightEn < distance)
 		{
 			setLeftDrivePower(power * sgn(distance));
 			setRightDrivePower(power * sgn(distance));
 			leftEn = SensorValue[leftEncoder];
-			rightEn = SensorValue[rightEncoder];
+			rightEn = -SensorValue[rightEncoder];
 		}
 		else
 		{
@@ -258,6 +259,9 @@ void driveWithPincerCont(int distance, int power, int angle)
 			motor[leftPincer] = 0;
 			motor[rightPincer] = 0;
 		}
+
+		if(time1[T2] > maxTime)
+			break;
 	}
 }
 
@@ -640,11 +644,12 @@ void runNewCompAuton(string side)
 		return;
 
 
-	driveForDistance(450, 127, -6); //moves to snag cube
+	driveWithPincerCont(450, 127, 0, 1500);
+	//driveForDistance(450, 127, -6); //moves to snag cube
 
 	//grab cube - long wait time to bring pincers from sides
-	setPincerPower(-127);
-	wait1Msec(1500); //MAY NEED TO CHANGE
+	//setPincerPower(-127);
+	//wait1Msec(1500); //MAY NEED TO CHANGE
 	/*
 	for(int i = 0; i < 500; i++)
 	{
@@ -683,10 +688,10 @@ void runNewCompAuton(string side)
 	else if(side == "left")
 		turnCounterClockwise(30);
 
-	driveForDistance(650, 127, -6);
+	driveForDistance(600, 127, -6);
 	setPincerPower(-127);
 	wait1Msec(500);
-	driveBackForDistance(-725, -127, 6);
+	driveBackForDistance(-675, -127, 6);
 
 	//launch();
 	int currAngle = SensorValue[liftPoten];
