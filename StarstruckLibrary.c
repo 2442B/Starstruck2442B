@@ -421,15 +421,15 @@ void runNewCompAuton(string side)
 	if(side != "right" && side != "left")
 		return;
 
-	driveWithPincerCont(450, 127, 0, 1500);
+	driveWithPincerCont(550, 127, 0, 1500);
 
 	setLiftPower(100);
 	//wait1Msec(500);
 
 	if(side == "right")
-		turnCounterClockwise(125);
+		turnCounterClockwise(120);
 	else if(side == "left")
-		turnClockwise(125);
+		turnClockwise(120);
 
 	setLiftPower(127);
 	driveForDistance(-400); //holding cube, drag to launch
@@ -437,14 +437,14 @@ void runNewCompAuton(string side)
 	fastLaunch();
 
 	if(side == "right")
-		turnClockwise(30);
+		turnClockwise(15);
 	else if(side == "left")
-		turnCounterClockwise(30);
+		turnCounterClockwise(15);
 
-	driveForDistance(550);
+	driveForDistance(500);
 	setPincerPower(-127);
 	wait1Msec(500);
-	driveForDistance(-650);
+	driveForDistance(-500);
 
 	int currAngle = SensorValue[liftPoten];
 	while(currAngle > 800) //Lift to drop pos - FIX NUMBER
