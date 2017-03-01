@@ -42,12 +42,6 @@ void setRightDrivePower(int power)
 	motor[driveRightBack] = power;
 	motor[driveRightFront] = power;
 }
-
-void allDriveMotorsToPower(int power)
-{
-	setRightDrivePower(power);
-	setLeftDrivePower(power);
-}
 void driveForTime(int time, int power)
 {
 	setLeftDrivePower(power);
@@ -72,7 +66,9 @@ void driveForDistance(int numClicks)
 		setLeftDrivePower((int)(leftConst * leftError) + 63 *(sgn(numClicks)));
 		setRightDrivePower((int)(rightConst * rightError) + 63 *(sgn(numClicks)));
 	}
-	allDriveMotorsToPower(0);
+	//clean
+	setRightDrivePower(0);
+	setLeftDrivePower(0);
 }
 
 void turnClockwise(int angle)
