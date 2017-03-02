@@ -161,8 +161,9 @@ void pincerToPos(int angle)
 	if(abs(leftPower) >= 5)
 		motor[leftPincer] = leftPower;
 
-	if(angle == 1030)
-		writeDebugStreamLine("right power: %d, rightPot: %d, left power: %d, leftPot: %d", rightPower, rightClawPoten, leftPower, leftClawPoten);
+	writeDebugStreamLine("left power: %d", leftPower);
+	//if(angle == 1030)
+		//writeDebugStreamLine("right power: %d, rightPot: %d, left power: %d, leftPot: %d", rightPower, rightClawPoten, leftPower, leftClawPoten);
 }
 
 //distance can be negative to drive backwards
@@ -208,7 +209,7 @@ void driveWithPincerCont(int distance, int power, int angle, int maxTime )
 void launch()
 {
 	int currAngle = SensorValue[liftPoten];
-	while(currAngle > 800) //Lift to drop pos - FIX NUMBER
+	while(currAngle > 700) //Lift to drop pos - FIX NUMBER
 	{
 		setLiftPower(127);
 		currAngle = SensorValue[liftPoten];
@@ -234,7 +235,7 @@ void launch()
 void fastLaunch()
 {
 	int currAngle = SensorValue[liftPoten];
-	while(currAngle > 800) //Lift to drop pos - FIX NUMBER
+	while(currAngle > 700) //Lift to drop pos - FIX NUMBER
 	{
 		setLiftPower(127);
 		currAngle = SensorValue[liftPoten];
@@ -258,42 +259,42 @@ void fastLaunch()
 	setLiftPower(0);
 }
 
-/** Programming Skills - broken into 4 "phases"
-* phase I: launches 4 preloads.. order: 2 stars, cube, 2 stars, cube
-* phase II: gets middle cube, launches
-* phase III: gets far cube, launches
-* phase IV: spins after launching cube and launches star in corner near fence
-* @param side, a String that specifies the side the robot starts on
-*/
-
+//Programming Skills - broken into 4 "phases"
+//phase descriptions in method body
 void runProgSkills(string side)
 {
-	//phase I : preloads
-	//claw starts on sides
+	//phase I : preloads (order: 2 stars, cube, 2 stars, cube)
 	driveForDistance(-110); //drive up a little to give space
 
-	setPincerPower(-127); //grab
-	wait1Msec(1500);
+	//grab
+	//setPincerPower(-127);
+	//wait1Msec(1500);
+	for(int i = 0; i < 1500; i++)
+	{
+		pincerToPos(75); //MAY NEED TO CHANGE THIS
+		wait1Msec(1);
+	}
 
-	setLiftPower(-100); //WHY?
+	setLiftPower(-100);
 	wait1Msec(1000);
-
 	setLiftPower(0);
 
-	driveForDistance(-500); //drives back to fence
-
+	driveWithPincerCont(-500, 127, 0, 1500); //drives back to fence
 	launch();
 
 	//Do for rest of preloads
 	for(int i = 0; i < 3; i++)
 	{
 		driveForDistance(500);
-		setPincerPower(-127);
-		wait1Msec(1000);
-		driveForDistance(-500);
+		for(int i = 0; i < 1000; i++)
+		{
+			pincerToPos(75); //MAY NEED TO CHANGE THIS
+			wait1Msec(1);
+		}
+
+		driveWithPincerCont(-500, 127, 0, 1500);
 		launch();
 	}
-	//-------------------------------
 
 	//phase II : get cube in the middle and launch
 
