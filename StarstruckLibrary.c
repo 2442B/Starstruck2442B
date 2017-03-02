@@ -165,7 +165,7 @@ void pincerToPos(int angle)
 		writeDebugStreamLine("right power: %d, rightPot: %d, left power: %d, leftPot: %d", rightPower, rightClawPoten, leftPower, leftClawPoten);
 }
 
-//ONLY USE WHERE NECESSARY - VERY ROUGH
+//distance can be negative to drive backwards
 void driveWithPincerCont(int distance, int power, int angle, int maxTime )
 {
 	SensorValue[leftEncoder] = 0;
@@ -174,7 +174,8 @@ void driveWithPincerCont(int distance, int power, int angle, int maxTime )
 	int rightEn = 0;
 	clearTimer(T2);
 
-	while( leftEn < distance || rightEn < distance || (abs(SensorValue[leftClawPoten] - angle) > 5 || abs(SensorValue[rightClawPoten] - angle) > 5) )
+	while( fabs(leftEn) < fabs(distance) || fabs(rightEn) < fabs(distance) ||
+			 ( fabs(SensorValue[leftClawPoten] - angle) > 5 || abs(SensorValue[rightClawPoten] - angle) > 5) )
 	{
 		if(leftEn < distance || rightEn < distance)
 		{
@@ -471,6 +472,7 @@ task usercontrol()
 		word btnEightDown = vexRT[Btn8D]; //for lift to set point
 		word btnSevenUp = vexRT[Btn7U]; //for folding claws
 		word btnSevenD = vexRT[Btn7D]; //180 degrees
+		word btnSevenL = vexRT[Btn7L];
 
 		//Drive Motors
 		if(leftJoy > 15 || leftJoy < -15) //dead zones
@@ -511,6 +513,8 @@ task usercontrol()
 			pincerToPos(3100);
 		else if(btnSevenD == 1)
 			pincerToPos(1500);
+		else if(btnSevenL == 1)
+			setPincerPower(-127);
 		else
 			setPincerPower(0);
 	}
