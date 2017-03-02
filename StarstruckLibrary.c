@@ -266,7 +266,7 @@ void runProgSkills(string side)
 {
 	//phase I : preloads
 	//claw starts on sides
-	driveForDistance(-150); //drive up a little to give space
+	driveForDistance(-110); //drive up a little to give space
 
 	setPincerPower(-127); //grab
 	wait1Msec(1500);
@@ -276,29 +276,17 @@ void runProgSkills(string side)
 
 	setLiftPower(0);
 
-	driveForDistance(-750); //drives back to fence
-
-	launch();
-
-	//CLEAN UP --------------------
-	driveForDistance(750);
-
-	setPincerPower(-127);
-	wait1Msec(1000);
-
-	driveForDistance(-750);
+	driveForDistance(-500); //drives back to fence
 
 	launch();
 
 	//Do for rest of preloads
-	for(int i = 0; i < 2; i++)
+	for(int i = 0; i < 3; i++)
 	{
-		driveForDistance(750);
+		driveForDistance(500);
 		setPincerPower(-127);
 		wait1Msec(1000);
-		setPincerPower(-100);
-		driveForDistance(-750);
-		setPincerPower(-127);
+		driveForDistance(-500);
 		launch();
 	}
 	//-------------------------------
