@@ -59,7 +59,7 @@ void driveForDistance(int numClicks)
 	float leftConst = 0.9;
 	int rightError = numClicks - SensorValue(rightEncoder);
 	float rightConst = 0.75;
-	while(abs(leftError * leftConst) > 0 && abs(rightError * rightConst) > 0)
+	while(fabs(leftError * leftConst) > 0 && fabs(rightError * rightConst) > 0)
 	{
 		leftError = numClicks - SensorValue(leftEncoder);
 		rightError = numClicks - SensorValue(rightEncoder);
@@ -160,6 +160,9 @@ void pincerToPos(int angle)
 	int leftPower = (int) -(0.25 * leftDif);
 	if(abs(leftPower) >= 5)
 		motor[leftPincer] = leftPower;
+
+	if(angle == 1030)
+		writeDebugStreamLine("right power: %d, rightPot: %d, left power: %d, leftPot: %d", rightPower, rightClawPoten, leftPower, leftClawPoten);
 }
 
 //ONLY USE WHERE NECESSARY - VERY ROUGH
@@ -298,9 +301,9 @@ void runProgSkills(string side)
 
 	//turn
 	if(side == "right")
-		turnClockwise(90);
+		turnClockwise(45);
 	else if(side == "left")
-		turnCounterClockwise(90);
+		turnCounterClockwise(45);
 
 	wait1Msec(250);
 
@@ -421,9 +424,9 @@ void runNewCompAuton(string side)
 	fastLaunch();
 
 	if(side == "right")
-		turnClockwise(15);
+		turnClockwise(10);
 	else if(side == "left")
-		turnCounterClockwise(15);
+		turnCounterClockwise(5);
 
 	driveForDistance(500);
 	setPincerPower(-127);
