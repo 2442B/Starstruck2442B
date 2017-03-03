@@ -151,17 +151,21 @@ void pincerToPos(int angle)
 {
 	int currRightAngle = SensorValue[rightClawPoten];
 	float rightDif = currRightAngle - angle;
+	//if(rightDif <= 10)//Buffer - should reduce bouncing
+	//	rightDif = 0;
 	int rightPower = (int) -(0.25 * rightDif);
 	if(abs(rightPower) >= 5)
 		motor[rightPincer] = rightPower;
 
 	int currLeftAngle = SensorValue[leftClawPoten];
-	float leftDif = currLeftAngle - angle - 100; //POSSIBLE ERROR
+	float leftDif = currLeftAngle - angle; //POSSIBLE ERROR
+	//if(leftDif <= 10)//Buffer - should reduce bouncing
+	//	leftDif = 0;
 	int leftPower = (int) -(0.25 * leftDif);
 	if(abs(leftPower) >= 5)
 		motor[leftPincer] = leftPower;
 
-	writeDebugStreamLine("left power: %d", leftPower);
+	//writeDebugStreamLine("left power: %d", leftPower);
 	//if(angle == 1030)
 		//writeDebugStreamLine("right power: %d, rightPot: %d, left power: %d, leftPot: %d", rightPower, rightClawPoten, leftPower, leftClawPoten);
 }
@@ -499,7 +503,8 @@ task usercontrol()
 		word rightTriggerDown = vexRT[Btn6D]; //for down lift
 		word leftTriggerUp = vexRT[Btn5U]; //for pincer close
 		word leftTriggerDown = vexRT[Btn5D]; //for pincer open
-		word btnEightDown = vexRT[Btn8D]; //for lift to set point
+		word btnEightUp = vexRT[Btn8U]; //override claw open
+		word btnEightDown = vexRT[Btn8D]; //override claw close
 		word btnSevenUp = vexRT[Btn7U]; //for folding claws
 		word btnSevenD = vexRT[Btn7D]; //180 degrees
 
@@ -529,9 +534,8 @@ task usercontrol()
 			setLiftPower(127);
 		else if(rightTriggerDown == 1)
 			setLiftPower(-127);
-		else if(btnEightDown == 1)
-			liftToPos(setPoint);
-		else setLiftPower(0);
+		else
+			setLiftPower(0);
 
 		//pincer
 		if(leftTriggerDown == 1)
@@ -542,6 +546,10 @@ task usercontrol()
 			pincerToPos(3100);
 		else if(btnSevenD == 1)
 			pincerToPos(1500);
+		else if(btnEightUp == 1)
+			setPincerPower(127);
+		else if(btnEightDown == 1)
+			setPincerPower(-127);
 		else
 			setPincerPower(0);
 	}
