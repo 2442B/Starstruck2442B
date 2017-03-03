@@ -312,7 +312,6 @@ void runProgSkills(string side)
 	wait1Msec(250);
 
 	driveForDistance(300); //moves down center toward cube
-	wait1Msec(750);
 
 	for(int i = 0; i < 1500; i++)
 	{
@@ -322,11 +321,18 @@ void runProgSkills(string side)
 
 	setPincerPower(0); //relax pincer motors b/c we are pushing
 
-	driveForDistance(1750); //drives to other end of field
+	setLiftPower(100);
 
-	setPincerPower(-127); //grabs cube again
-	wait1Msec(750); //longer wait time - turning with a cube
+	if(side == "right")
+		turnCounterClockwise(45);
+	else if(side == "left")
+		turnClockwise(45);
 
+	setLiftPower(127);
+	driveForDistance(-100);
+
+	launch();
+	/*
 	//turn
 	if(side == "right")
 		turnCounterClockwise(140);
@@ -338,7 +344,7 @@ void runProgSkills(string side)
 	//drives toward fence and launches
 	driveForDistance(-450);
 
-	launch();
+	launch(); */
 
 	//phase III : move back and get last cube and launches
 	driveForDistance(700);
@@ -408,7 +414,7 @@ void runProgSkills(string side)
 }
 
 //focus - limits wait times and use of pincer power
-void runNewCompAuton(string side)
+void runMainCompAuton(string side)
 {
 	clearTimer(T1);
 
@@ -418,7 +424,6 @@ void runNewCompAuton(string side)
 	driveWithPincerCont(550, 127, 0, 1500);
 
 	setLiftPower(100);
-	//wait1Msec(500);
 
 	if(side == "right")
 		turnCounterClockwise(120);
@@ -459,6 +464,25 @@ void runNewCompAuton(string side)
 	setPincerPower(0);
 
 	writeDebugStreamLine("%i", time1[T1]);
+}
+
+//drive to knock off stars - no string
+void runBasicCompAuton()
+{
+	driveWithPincerCont(470, 127, 2000, 1500);
+	setPincerPower(0);
+	for(int i = 0; i < 2000; i++)
+	{
+		liftToPos(1300);
+		wait1Msec(1);
+	}
+	driveForDistance(-100);
+	for(int i = 0; i < 750; i++)
+	{
+		liftToPos(1500);
+		wait1Msec(1);
+	}
+	setLiftPower(0);
 }
 
 task usercontrol()
