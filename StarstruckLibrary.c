@@ -176,9 +176,9 @@ void driveWithPincerCont(int distance, int power, int angle, int maxTime )
 	clearTimer(T2);
 
 	while( fabs(leftEn) < fabs(distance) || fabs(rightEn) < fabs(distance) ||
-			 ( fabs(SensorValue[leftClawPoten] - angle) > 5 || abs(SensorValue[rightClawPoten] - angle) > 5) )
+			 ( fabs(SensorValue[leftClawPoten] - angle) > 5 || fabs(SensorValue[rightClawPoten] - angle) > 5) )
 	{
-		if(leftEn < distance || rightEn < distance)
+		if(fabs(leftEn) < fabs(distance) || fabs(rightEn) < fabs(distance))
 		{
 			setLeftDrivePower(power * sgn(distance));
 			setRightDrivePower(power * sgn(distance));
@@ -190,7 +190,7 @@ void driveWithPincerCont(int distance, int power, int angle, int maxTime )
 			setLeftDrivePower(0);
 			setRightDrivePower(0);
 		}
-		if(abs(SensorValue[leftClawPoten] - angle) > 5 || abs(SensorValue[rightClawPoten] - angle) > 5)
+		if(fabs(SensorValue[leftClawPoten] - angle) > 5 || fabs(SensorValue[rightClawPoten] - angle) > 5)
 		{
 			motor[leftPincer] = -127 * (SensorValue[leftClawPoten] - angle);
 			motor[rightPincer] = -127 * (SensorValue[rightClawPoten] - angle);
@@ -209,7 +209,7 @@ void driveWithPincerCont(int distance, int power, int angle, int maxTime )
 void launch()
 {
 	int currAngle = SensorValue[liftPoten];
-	while(currAngle > 700) //Lift to drop pos - FIX NUMBER
+	while(currAngle > 600) //Lift to drop pos - FIX NUMBER
 	{
 		setLiftPower(127);
 		currAngle = SensorValue[liftPoten];
@@ -235,7 +235,7 @@ void launch()
 void fastLaunch()
 {
 	int currAngle = SensorValue[liftPoten];
-	while(currAngle > 700) //Lift to drop pos - FIX NUMBER
+	while(currAngle > 600) //Lift to drop pos - FIX NUMBER
 	{
 		setLiftPower(127);
 		currAngle = SensorValue[liftPoten];
@@ -264,22 +264,21 @@ void fastLaunch()
 void runProgSkills(string side)
 {
 	//phase I : preloads (order: 2 stars, cube, 2 stars, cube)
-	driveForDistance(-110); //drive up a little to give space
+	driveForDistance(-70); //drive up a little to give space
 
 	//grab
 	//setPincerPower(-127);
 	//wait1Msec(1500);
 	for(int i = 0; i < 1500; i++)
 	{
-		pincerToPos(75); //MAY NEED TO CHANGE THIS
+		pincerToPos(25);
 		wait1Msec(1);
 	}
 
-	setLiftPower(-100);
-	wait1Msec(1000);
-	setLiftPower(0);
-
 	driveWithPincerCont(-500, 127, 0, 1500); //drives back to fence
+	setPincerPower(-127);
+	setLeftDrivePower(0);
+	setRightDrivePower(0);
 	launch();
 
 	//Do for rest of preloads
@@ -288,17 +287,20 @@ void runProgSkills(string side)
 		driveForDistance(500);
 		for(int i = 0; i < 1000; i++)
 		{
-			pincerToPos(75); //MAY NEED TO CHANGE THIS
+			pincerToPos(75);
 			wait1Msec(1);
 		}
 
 		driveWithPincerCont(-500, 127, 0, 1500);
+		setPincerPower(-127);
+		setLeftDrivePower(0);
+		setRightDrivePower(0);
 		launch();
 	}
 
 	//phase II : get cube in the middle and launch
 
-	driveForDistance(550);
+	driveForDistance(350);
 	wait1Msec(250);
 
 	//turn
@@ -309,11 +311,14 @@ void runProgSkills(string side)
 
 	wait1Msec(250);
 
-	driveForDistance(400); //moves down center toward cube
+	driveForDistance(300); //moves down center toward cube
 	wait1Msec(750);
 
-	setPincerPower(-127); //grabs cube
-	wait1Msec(1500); //place to possible change wait time
+	for(int i = 0; i < 1500; i++)
+	{
+		pincerToPos(75);
+		wait1Msec(1);
+	}
 
 	setPincerPower(0); //relax pincer motors b/c we are pushing
 
@@ -473,7 +478,6 @@ task usercontrol()
 		word btnEightDown = vexRT[Btn8D]; //for lift to set point
 		word btnSevenUp = vexRT[Btn7U]; //for folding claws
 		word btnSevenD = vexRT[Btn7D]; //180 degrees
-		word btnSevenL = vexRT[Btn7L];
 
 		//Drive Motors
 		if(leftJoy > 15 || leftJoy < -15) //dead zones
@@ -514,8 +518,6 @@ task usercontrol()
 			pincerToPos(3100);
 		else if(btnSevenD == 1)
 			pincerToPos(1500);
-		else if(btnSevenL == 1)
-			setPincerPower(-127);
 		else
 			setPincerPower(0);
 	}
