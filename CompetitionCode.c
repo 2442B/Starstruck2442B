@@ -290,6 +290,7 @@ void runProgSkills(string side)
 		setLeftDrivePower(0);
 		setRightDrivePower(0);
 		launch();
+		wait1Msec(2500);
 	}
 
 	//phase II : get cube in the middle and launch
@@ -420,12 +421,17 @@ void runMainCompAuton(string side)
 	setLiftPower(100);
 
 	if(side == "right")
-		turnCounterClockwise(120);
+		turnCounterClockwise(90);
 	else if(side == "left")
-		turnClockwise(120);
+		turnClockwise(90);
 
 	setLiftPower(127);
-	driveForDistance(-400); //holding cube, drag to launch
+	driveForDistance(-300); //holding cube, drag to launch
+	if(side == "right")
+		turnCounterClockwise(30);
+	else if(side == "left")
+		turnClockwise(30);
+  driveForDistance(-50);
 
 	fastLaunch();
 
@@ -488,7 +494,7 @@ void pre_auton()
 task autonomous()
 
 {
-	string side = "left";
+	string side = "right";
 	runMainCompAuton(side);
 	//runBasicCompAuton();
 	//runProgSkills(side);
