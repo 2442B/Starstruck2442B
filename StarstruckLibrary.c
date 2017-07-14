@@ -1,4 +1,4 @@
-#pragma config(Sensor, in1,    liftPoten,      sensorNone)
+#pragma config(Sensor, in1,    liftPoten,      sensorPotentiometer)
 #pragma config(Sensor, in2,    leftClawPoten,  sensorPotentiometer)
 #pragma config(Sensor, in3,    rightClawPoten, sensorPotentiometer)
 #pragma config(Sensor, dgtl1,  leftEncoder,    sensorQuadEncoder)
@@ -154,7 +154,7 @@ void pincerToPos(int angle)
 
 	//writeDebugStreamLine("left power: %d", leftPower);
 	//if(angle == 1030)
-		//writeDebugStreamLine("right power: %d, rightPot: %d, left power: %d, leftPot: %d", rightPower, rightClawPoten, leftPower, leftClawPoten);
+	//writeDebugStreamLine("right power: %d, rightPot: %d, left power: %d, leftPot: %d", rightPower, rightClawPoten, leftPower, leftClawPoten);
 }
 
 //distance can be negative to drive backwards
@@ -167,7 +167,7 @@ void driveWithPincerCont(int distance, int power, int angle, int maxTime )
 	clearTimer(T2);
 
 	while( fabs(leftEn) < fabs(distance) || fabs(rightEn) < fabs(distance) ||
-			 ( fabs(SensorValue[leftClawPoten] - angle) > 5 || fabs(SensorValue[rightClawPoten] - angle) > 5) )
+		( fabs(SensorValue[leftClawPoten] - angle) > 5 || fabs(SensorValue[rightClawPoten] - angle) > 5) )
 	{
 		if(fabs(leftEn) < fabs(distance) || fabs(rightEn) < fabs(distance))
 		{
@@ -200,12 +200,14 @@ void driveWithPincerCont(int distance, int power, int angle, int maxTime )
 void launch()
 {
 	int currAngle = SensorValue[liftPoten];
-	while(currAngle > 600) //Lift to drop pos - FIX NUMBER
+	writeDebugStreamLine("%d", currAngle);
+	while(currAngle > 250) //Lift to drop pos - FIX NUMBER
 	{
 		setLiftPower(127);
 		currAngle = SensorValue[liftPoten];
 		wait1Msec(10);
 	}
+	writeDebugStreamLine("%d", currAngle);
 	setLiftPower(-10);
 	wait1Msec(250);
 	setLiftPower(0);
@@ -226,7 +228,7 @@ void launch()
 void fastLaunch()
 {
 	int currAngle = SensorValue[liftPoten];
-	while(currAngle > 600) //Lift to drop pos - FIX NUMBER
+	while(currAngle > 250) //Lift to drop pos - FIX NUMBER
 	{
 		setLiftPower(127);
 		currAngle = SensorValue[liftPoten];
@@ -248,160 +250,6 @@ void fastLaunch()
 		wait1Msec(10);
 	}
 	setLiftPower(0);
-}
-
-//Programming Skills - broken into 4 "phases"
-//phase descriptions in method body
-void runProgSkills(string side)
-{
-	//phase I : preloads (order: 2 stars, cube, 2 stars, cube)
-	driveForDistance(-70); //drive up a little to give space
-
-	//grab
-	//setPincerPower(-127);
-	//wait1Msec(1500);
-	for(int i = 0; i < 1500; i++)
-	{
-		pincerToPos(25);
-		wait1Msec(1);
-	}
-
-	driveWithPincerCont(-500, 127, 0, 1500); //drives back to fence
-	setPincerPower(-127);
-	setLeftDrivePower(0);
-	setRightDrivePower(0);
-	launch();
-
-	//Do for rest of preloads
-	for(int i = 0; i < 3; i++)
-	{
-		driveForDistance(500);
-		for(int i = 0; i < 1000; i++)
-		{
-			pincerToPos(75);
-			wait1Msec(1);
-		}
-
-		driveWithPincerCont(-500, 127, 0, 1500);
-		setPincerPower(-127);
-		setLeftDrivePower(0);
-		setRightDrivePower(0);
-		launch();
-	}
-
-	//phase II : get cube in the middle and launch
-
-	driveForDistance(350);
-	wait1Msec(250);
-
-	//turn
-	if(side == "right")
-		turnClockwise(45);
-	else if(side == "left")
-		turnCounterClockwise(45);
-
-	wait1Msec(250);
-
-	driveForDistance(300); //moves down center toward cube
-
-	for(int i = 0; i < 1500; i++)
-	{
-		pincerToPos(75);
-		wait1Msec(1);
-	}
-
-	setPincerPower(0); //relax pincer motors b/c we are pushing
-
-	setLiftPower(100);
-
-	if(side == "right")
-		turnCounterClockwise(60);
-	else if(side == "left")
-		turnClockwise(60);
-
-	setLiftPower(127);
-	driveForDistance(-100);
-
-	launch();
-	/*
-	//turn
-	if(side == "right")
-		turnCounterClockwise(140);
-	else if(side == "left")
-		turnClockwise(140);
-
-	wait1Msec(250);
-
-	//drives toward fence and launches
-	driveForDistance(-450);
-
-	launch(); */
-
-	//phase III : move back and get last cube and launches
-	driveForDistance(700);
-	wait1Msec(250);
-
-	setPincerPower(-127);
-	wait1Msec(250);
-
-	driveForDistance(-650);
-
-	launch();
-
-	//phase IV : spin and grab star
-	//sets pincers to be on sides of robot
-	for(int i = 0; i < 1500; i++)
-	{
-		pincerToPos(3100);
-		wait1Msec(1);
-	}
-
-	//move away from fence a little bit
-	driveForDistance(250);
-	wait1Msec(250);
-
-	//turn
-	if(side == "right")
-		turnClockwise(115);
-	else if(side == "left")
-		turnCounterClockwise(115);
-
-	wait1Msec(250);
-
-	for(int i = 0; i < 1000; i++)
-	{
-		pincerToPos(1030);
-		wait1Msec(1);
-	}
-
-	driveForDistance(100);
-	wait1Msec(250);
-
-	setPincerPower(-127); //grab star - usually not very well
-	wait1Msec(250);
-
-	for(int i = 0; i < 1000; i++) //open claw again
-	{
-		pincerToPos(1030);
-		wait1Msec(1);
-	}
-
-	driveForDistance(50); //move forward a little
-	wait1Msec(250);
-
-	setPincerPower(-127); //grab cube again
-	wait1Msec(500);
-
-	//turn - may need to change
-	if(side == "right")
-		turnCounterClockwise(115);
-	else if(side == "left")
-		turnClockwise(115);
-
-	wait1Msec(250);
-
-	driveForDistance(-250); //may need changing
-	launch();
 }
 
 //focus - limits wait times and use of pincer power
@@ -426,10 +274,12 @@ void runMainCompAuton(string side)
 
 	fastLaunch();
 
+	/*
 	if(side == "right")
-		turnClockwise(10);
+	turnClockwise(5);
 	else if(side == "left")
-		turnCounterClockwise(5);
+	turnCounterClockwise(5);
+	*/
 
 	driveForDistance(500);
 	setPincerPower(-127);
@@ -456,6 +306,210 @@ void runMainCompAuton(string side)
 
 	writeDebugStreamLine("%i", time1[T1]);
 }
+
+
+//Programming Skills - broken into 4 "phases"
+//phase descriptions in method body
+void runProgSkills(string side)
+{
+	runMainCompAuton(side);
+
+	if(side == "right")
+		turnCounterClockwise(5);
+	else if(side == "left")
+		turnClockwise(5);
+
+	driveForDistance(700);
+
+	for(int i = 0; i < 150; i++)
+	{
+		pincerToPos(25);
+		wait1Msec(10);
+	}
+
+	setLiftPower(100);
+
+	if(side == "right")
+		turnClockwise(5);
+	else if(side == "left")
+		turnCounterClockwise(5);
+
+	driveForDistance(-500);
+	setLeftDrivePower(0);
+	setRightDrivePower(0);
+	setPincerPower(-127);
+	launch();
+
+	for(int i = 0; i < 3; i++)
+	{
+		driveForDistance(500);
+		for(int i = 0; i < 150; i++)
+		{
+			pincerToPos(25);
+			wait1Msec(10);
+		}
+		driveWithPincerCont(-500, 127, 0, 1500);
+		setPincerPower(-127);
+		launch();
+	}
+
+
+	//NORMAL VERSION STARTS HERE
+	/*
+	//phase I : preloads (order: 2 stars, cube, 2 stars, cube)
+	driveForDistance(-60); //drive up a little to give space
+
+	//grab
+	//setPincerPower(-127);
+	//wait1Msec(1500);
+	for(int i = 0; i < 1500; i++)
+	{
+	pincerToPos(25);
+	wait1Msec(1);
+	}
+
+	driveWithPincerCont(-500, 127, 0, 1500); //drives back to fence
+	setPincerPower(-127);
+	setLeftDrivePower(0);
+	setRightDrivePower(0);
+	launch();
+
+	//Do for rest of preloads
+	for(int i = 0; i < 3; i++)
+	{
+	driveForDistance(500);
+	for(int i = 0; i < 1000; i++)
+	{
+	pincerToPos(75);
+	wait1Msec(1);
+	}
+
+	driveWithPincerCont(-500, 127, 0, 1500);
+	setPincerPower(-127);
+	setLeftDrivePower(0);
+	setRightDrivePower(0);
+	launch();
+	wait1Msec(2500);
+	}
+
+	//phase II : get cube in the middle and launch
+
+	driveForDistance(350);
+	wait1Msec(250);
+
+	//turn
+	if(side == "right")
+	turnClockwise(45);
+	else if(side == "left")
+	turnCounterClockwise(45);
+
+	wait1Msec(250);
+
+	driveForDistance(300); //moves down center toward cube
+
+	for(int i = 0; i < 1500; i++)
+	{
+	pincerToPos(75);
+	wait1Msec(1);
+	}
+
+	setPincerPower(0); //relax pincer motors b/c we are pushing
+
+	setLiftPower(100);
+
+	if(side == "right")
+	turnCounterClockwise(60);
+	else if(side == "left")
+	turnClockwise(60);
+
+	setLiftPower(127);
+	driveForDistance(-100);
+
+	launch();
+	/*
+	//turn
+	if(side == "right")
+	turnCounterClockwise(140);
+	else if(side == "left")
+	turnClockwise(140);
+
+	wait1Msec(250);
+
+	//drives toward fence and launches
+	driveForDistance(-450);
+
+	launch(); add comment here
+
+	//phase III : move back and get last cube and launches
+	driveForDistance(700);
+	wait1Msec(250);
+
+	setPincerPower(-127);
+	wait1Msec(250);
+
+	driveForDistance(-650);
+
+	launch();
+
+	//phase IV : spin and grab star
+	//sets pincers to be on sides of robot
+	for(int i = 0; i < 1500; i++)
+	{
+	pincerToPos(3100);
+	wait1Msec(1);
+	}
+
+	//move away from fence a little bit
+	driveForDistance(250);
+	wait1Msec(250);
+
+	//turn
+	if(side == "right")
+	turnClockwise(115);
+	else if(side == "left")
+	turnCounterClockwise(115);
+
+	wait1Msec(250);
+
+	for(int i = 0; i < 1000; i++)
+	{
+	pincerToPos(1030);
+	wait1Msec(1);
+	}
+
+	driveForDistance(100);
+	wait1Msec(250);
+
+	setPincerPower(-127); //grab star - usually not very well
+	wait1Msec(250);
+
+	for(int i = 0; i < 1000; i++) //open claw again
+	{
+	pincerToPos(1030);
+	wait1Msec(1);
+	}
+
+	driveForDistance(50); //move forward a little
+	wait1Msec(250);
+
+	setPincerPower(-127); //grab cube again
+	wait1Msec(500);
+
+	//turn - may need to change
+	if(side == "right")
+	turnCounterClockwise(115);
+	else if(side == "left")
+	turnClockwise(115);
+
+	wait1Msec(250);
+
+	driveForDistance(-250); //may need changing
+	launch();
+	*/
+
+}
+
+
 
 //drive to knock off stars - no string
 void runBasicCompAuton()
